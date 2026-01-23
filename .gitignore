@@ -1,0 +1,51 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Build outputs
+exe/*.exe
+exe/*-macos
+exe/*-linux
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+logs/
+*.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# User data
+src/AdbFileManager/exports/
+src/AdbFileManager/downloads/
+
+# ADB tools (if included)
+platform-tools/
+
+# Backup files
+*.bak
+*.backup
+*~

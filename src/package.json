@@ -1,0 +1,47 @@
+{
+  "name": "easy-adb",
+  "version": "1.0.0",
+  "description": "EasyADB - A powerful and user-friendly ADB file management tool for Android devices",
+  "author": "一只大菜狗",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pengjugame/EasyADB.git"
+  },
+  "keywords": [
+    "adb",
+    "android",
+    "file-manager",
+    "quest",
+    "meta-quest",
+    "cli",
+    "tool"
+  ],
+  "main": "adb-manager.js",
+  "scripts": {
+    "start": "node adb-manager.js",
+    "quest": "node quest-video.js",
+    "build:win": "pkg quest-video.js -t node18-win-x64 -o ../exe/quest-video.exe && pkg adb-manager.js -t node18-win-x64 -o ../exe/adb-manager.exe",
+    "build:macos": "pkg quest-video.js -t node18-macos-x64 -o ../exe/quest-video-macos && pkg adb-manager.js -t node18-macos-x64 -o ../exe/adb-manager-macos",
+    "build:linux": "pkg quest-video.js -t node18-linux-x64 -o ../exe/quest-video-linux && pkg adb-manager.js -t node18-linux-x64 -o ../exe/adb-manager-linux",
+    "build:all": "npm run build:win && npm run build:macos && npm run build:linux"
+  },
+  "pkg": {
+    "assets": [
+      "AdbFileManager/**/*"
+    ],
+    "outputPath": "../exe"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.3",
+    "dayjs": "^1.11.10",
+    "inquirer": "^8.2.6"
+  },
+  "devDependencies": {
+    "pkg": "^5.8.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "app": {
+    "name": "ADB 文件管理器",
+    "version": "1.0.0",
+    "author": "一只大菜狗"
+  },
+  "device": {
+    "name": "Meta Quest 3 录屏",
+    "remotePath": "/sdcard/oculus/VideoShots",
+    "fileExtensions": [
+      ".mp4"
+    ]
+  },
+  "import": {
+    "localFolder": "Videos",
+    "folderNameFormat": "YYYY-MM-DD",
+    "useSubfolderByDate": true
+  },
+  "display": {
+    "dateFormat": "YYYY-MM-DD HH:mm",
+    "extractAppNameFromFilename": true,
+    "appNameSegments": 2
+  },
+  "presets": {
+    "MetaQuest3_Videos": {
+      "name": "Meta Quest 3 录屏",
+      "remotePath": "/sdcard/oculus/VideoShots",
+      "fileExtensions": [
+        ".mp4"
+      ]
+    },
+    "MetaQuest3_Screenshots": {
+      "name": "Meta Quest 3 截图",
+      "remotePath": "/sdcard/oculus/Screenshots",
+      "fileExtensions": [
+        ".jpg",
+        ".png"
+      ]
+    },
+    "Android_DCIM": {
+      "name": "安卓相册",
+      "remotePath": "/sdcard/DCIM/Camera",
+      "fileExtensions": [
+        ".jpg",
+        ".png",
+        ".mp4"
+      ]
+    },
+    "Android_Download": {
+      "name": "安卓下载",
+      "remotePath": "/sdcard/Download",
+      "fileExtensions": [
+        "*"
+      ]
+    }
+  }
+}
