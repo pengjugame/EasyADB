@@ -25,12 +25,9 @@ function getAppDir() {
     if (fs.existsSync(path.join(exeDir, 'lib', 'config'))) {
         return exeDir;
     }
-    // 开发时使用当前工作目录
-    const cwdDir = process.cwd();
-    if (fs.existsSync(path.join(cwdDir, 'lib', 'config'))) {
-        return cwdDir;
-    }
-    // 回退到脚本目录的上级目录（项目根目录）
+
+    // 开发时总是使用项目根目录（src的上级目录）
+    // 因为配置文件在项目根目录的lib/config下
     return path.dirname(__dirname);
 }
 
