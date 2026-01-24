@@ -1,0 +1,124 @@
+{
+  "app": {
+    "name": "EasyADB 文件管理器",
+    "version": "版本",
+    "author": "作者"
+  },
+  "menu": {
+    "main_title": "ADB 文件管理器 - 主菜单",
+    "scan_device": "🔍 扫描设备文件",
+    "export_files": "📤 导出文件",
+    "delete_files": "🗑️  删除文件",
+    "cleanup_old": "🧹 清理旧文件",
+    "settings": "⚙️  设置",
+    "exit": "🚪 退出",
+    "back": "⬅️  返回",
+    "confirm": "✅ 确认",
+    "cancel": "❌ 取消"
+  },
+  "device": {
+    "connecting": "正在连接设备...",
+    "connected": "设备连接成功",
+    "disconnected": "设备已断开",
+    "no_device": "未连接设备",
+    "scanning": "正在扫描设备文件...",
+    "scan_complete": "扫描完成",
+    "no_files": "未找到文件",
+    "file_count": "找到 {count} 个文件"
+  },
+  "file": {
+    "name": "文件名",
+    "size": "大小",
+    "date": "日期",
+    "type": "类型",
+    "path": "路径",
+    "selected": "已选择",
+    "exporting": "正在导出文件...",
+    "export_complete": "导出完成",
+    "export_failed": "导出失败",
+    "deleting": "正在删除文件...",
+    "delete_complete": "删除完成",
+    "delete_failed": "删除失败",
+    "delete_confirm": "确定要删除 {count} 个文件吗？",
+    "delete_warning": "此操作无法撤销！",
+    "cleanup_confirm": "保留最近 {days} 天的文件，删除更旧的文件？",
+    "cleanup_complete": "清理完成，删除了 {count} 个文件"
+  },
+  "settings": {
+    "title": "设置",
+    "language": "语言 / Language",
+    "current_lang": "当前语言",
+    "select_lang": "选择语言",
+    "device_config": "设备配置",
+    "preset_name": "预设名称",
+    "remote_path": "远程路径",
+    "local_path": "本地路径",
+    "file_types": "文件类型",
+    "save_config": "保存配置",
+    "load_config": "加载配置"
+  },
+  "language": {
+    "english": "English",
+    "chinese": "中文",
+    "select_language": "Please select your language / 请选择您的语言",
+    "language_changed": "语言已切换为 {lang}。请重启应用程序。",
+    "restart_required": "需要重启"
+  },
+  "preset": {
+    "quest_videos": "Meta Quest 录屏",
+    "quest_screenshots": "Meta Quest 截图",
+    "android_camera": "安卓相册",
+    "android_download": "安卓下载",
+    "custom": "自定义配置"
+  },
+  "filter": {
+    "by_date": "按日期筛选",
+    "by_size": "按大小筛选",
+    "by_type": "按类型筛选",
+    "by_name": "按名称筛选",
+    "date_range": "日期范围",
+    "size_range": "大小范围",
+    "file_pattern": "文件模式",
+    "start_date": "开始日期 (YYYY-MM-DD)",
+    "end_date": "结束日期 (YYYY-MM-DD)",
+    "min_size": "最小大小 (MB)",
+    "max_size": "最大大小 (MB)"
+  },
+  "progress": {
+    "processing": "处理中...",
+    "completed": "已完成",
+    "failed": "失败",
+    "cancelled": "已取消",
+    "progress": "进度: {current}/{total}",
+    "speed": "速度: {speed}/s",
+    "eta": "预计剩余: {time}"
+  },
+  "error": {
+    "generic": "发生错误",
+    "connection_failed": "连接设备失败",
+    "permission_denied": "权限被拒绝",
+    "file_not_found": "文件未找到",
+    "invalid_path": "无效路径",
+    "insufficient_space": "磁盘空间不足",
+    "adb_not_found": "未找到ADB。请安装Android SDK。",
+    "device_not_found": "未找到Android设备。请连接设备并启用USB调试。",
+    "timeout": "操作超时",
+    "network_error": "网络错误"
+  },
+  "success": {
+    "operation_complete": "操作成功完成",
+    "files_exported": "成功导出 {count} 个文件",
+    "files_deleted": "成功删除 {count} 个文件",
+    "config_saved": "配置保存成功",
+    "config_loaded": "配置加载成功"
+  },
+  "info": {
+    "welcome": "欢迎使用 EasyADB 文件管理器",
+    "select_option": "请选择一个选项",
+    "press_enter": "按回车键继续",
+    "loading": "加载中...",
+    "searching": "搜索中...",
+    "connecting": "连接中...",
+    "disconnecting": "断开连接..."
+  }
+}

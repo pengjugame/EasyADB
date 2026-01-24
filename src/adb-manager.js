@@ -1076,6 +1076,10 @@ async function mainMenu() {
 
 // ========== 启动 ==========
 
+// 初始化国际化
+const configPath = getConfigPath();
+i18n.init(configPath);
+
 mainMenu().catch(err => {
     console.error(chalk.red('发生错误:'), err.message);
     process.exit(1);

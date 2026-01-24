@@ -1,0 +1,124 @@
+{
+  "app": {
+    "name": "EasyADB File Manager",
+    "version": "Version",
+    "author": "Author"
+  },
+  "menu": {
+    "main_title": "ADB File Manager - Main Menu",
+    "scan_device": "🔍 Scan Device Files",
+    "export_files": "📤 Export Files",
+    "delete_files": "🗑️  Delete Files",
+    "cleanup_old": "🧹 Cleanup Old Files",
+    "settings": "⚙️  Settings",
+    "exit": "🚪 Exit",
+    "back": "⬅️  Back",
+    "confirm": "✅ Confirm",
+    "cancel": "❌ Cancel"
+  },
+  "device": {
+    "connecting": "Connecting to device...",
+    "connected": "Device connected successfully",
+    "disconnected": "Device disconnected",
+    "no_device": "No device connected",
+    "scanning": "Scanning device files...",
+    "scan_complete": "Scan completed",
+    "no_files": "No files found",
+    "file_count": "Found {count} files"
+  },
+  "file": {
+    "name": "File Name",
+    "size": "Size",
+    "date": "Date",
+    "type": "Type",
+    "path": "Path",
+    "selected": "Selected",
+    "exporting": "Exporting files...",
+    "export_complete": "Export completed",
+    "export_failed": "Export failed",
+    "deleting": "Deleting files...",
+    "delete_complete": "Delete completed",
+    "delete_failed": "Delete failed",
+    "delete_confirm": "Are you sure you want to delete {count} files?",
+    "delete_warning": "This action cannot be undone!",
+    "cleanup_confirm": "Keep files from last {days} days, delete older files?",
+    "cleanup_complete": "Cleanup completed, deleted {count} files"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language / 语言",
+    "current_lang": "Current Language",
+    "select_lang": "Select Language",
+    "device_config": "Device Configuration",
+    "preset_name": "Preset Name",
+    "remote_path": "Remote Path",
+    "local_path": "Local Path",
+    "file_types": "File Types",
+    "save_config": "Save Configuration",
+    "load_config": "Load Configuration"
+  },
+  "language": {
+    "english": "English",
+    "chinese": "中文",
+    "select_language": "Please select your language / 请选择您的语言",
+    "language_changed": "Language changed to {lang}. Please restart the application.",
+    "restart_required": "Restart Required"
+  },
+  "preset": {
+    "quest_videos": "Meta Quest Videos",
+    "quest_screenshots": "Meta Quest Screenshots",
+    "android_camera": "Android Camera",
+    "android_download": "Android Download",
+    "custom": "Custom Configuration"
+  },
+  "filter": {
+    "by_date": "Filter by Date",
+    "by_size": "Filter by Size",
+    "by_type": "Filter by Type",
+    "by_name": "Filter by Name",
+    "date_range": "Date Range",
+    "size_range": "Size Range",
+    "file_pattern": "File Pattern",
+    "start_date": "Start Date (YYYY-MM-DD)",
+    "end_date": "End Date (YYYY-MM-DD)",
+    "min_size": "Min Size (MB)",
+    "max_size": "Max Size (MB)"
+  },
+  "progress": {
+    "processing": "Processing...",
+    "completed": "Completed",
+    "failed": "Failed",
+    "cancelled": "Cancelled",
+    "progress": "Progress: {current}/{total}",
+    "speed": "Speed: {speed}/s",
+    "eta": "ETA: {time}"
+  },
+  "error": {
+    "generic": "An error occurred",
+    "connection_failed": "Failed to connect to device",
+    "permission_denied": "Permission denied",
+    "file_not_found": "File not found",
+    "invalid_path": "Invalid path",
+    "insufficient_space": "Insufficient disk space",
+    "adb_not_found": "ADB not found. Please install Android SDK.",
+    "device_not_found": "Android device not found. Please connect your device and enable USB debugging.",
+    "timeout": "Operation timeout",
+    "network_error": "Network error"
+  },
+  "success": {
+    "operation_complete": "Operation completed successfully",
+    "files_exported": "{count} files exported successfully",
+    "files_deleted": "{count} files deleted successfully",
+    "config_saved": "Configuration saved successfully",
+    "config_loaded": "Configuration loaded successfully"
+  },
+  "info": {
+    "welcome": "Welcome to EasyADB File Manager",
+    "select_option": "Please select an option",
+    "press_enter": "Press Enter to continue",
+    "loading": "Loading...",
+    "searching": "Searching...",
+    "connecting": "Connecting...",
+    "disconnecting": "Disconnecting..."
+  }
+}
