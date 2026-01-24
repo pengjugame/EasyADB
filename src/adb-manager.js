@@ -13,22 +13,25 @@ const chalk = require('chalk');
 const Table = require('cli-table3');
 const dayjs = require('dayjs');
 
+// 国际化支持
+const i18n = require('./lib/i18n/i18n');
+
 // ========== 配置管理 ==========
 
 // 获取程序运行目录（exe所在目录或脚本目录）
 function getAppDir() {
     // 打包后使用exe所在目录
     const exeDir = path.dirname(process.execPath);
-    if (fs.existsSync(path.join(exeDir, 'config'))) {
+    if (fs.existsSync(path.join(exeDir, 'lib', 'config'))) {
         return exeDir;
     }
     // 开发时使用当前工作目录
     const cwdDir = process.cwd();
-    if (fs.existsSync(path.join(cwdDir, 'config'))) {
+    if (fs.existsSync(path.join(cwdDir, 'lib', 'config'))) {
         return cwdDir;
     }
-    // 回退到脚本目录
-    return __dirname;
+    // 回退到脚本目录的上级目录（项目根目录）
+    return path.dirname(__dirname);
 }
 
 // 获取配置文件路径（支持打包后的exe）
