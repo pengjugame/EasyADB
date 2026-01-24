@@ -33,15 +33,16 @@ function getAppDir() {
 
 // 获取配置文件路径（支持打包后的exe）
 function getConfigPath() {
-    const appDir = getAppDir();
-    const configDir = path.join(appDir, 'config');
+    // 开发时直接使用src/lib/config/config.json
+    const configPath = path.join(__dirname, 'lib', 'config', 'config.json');
 
     // 确保config目录存在
+    const configDir = path.dirname(configPath);
     if (!fs.existsSync(configDir)) {
         fs.mkdirSync(configDir, { recursive: true });
     }
 
-    return path.join(configDir, 'config.json');
+    return configPath;
 }
 
 // 加载配置
