@@ -64,7 +64,7 @@ scripts/start.sh
 
 ```bash
 cd src
-node adb-manager.js    # Universal Android device manager
+node adb-manager.js    # Android device manager
 ```
 
 ## Usage
@@ -117,14 +117,15 @@ Edit `src/AdbFileManager/config/config.json` to customize:
 ```
 EasyADB/
 ├── src/                    # Source code
-│   ├── quest-video.js      # Quest video manager
-│   ├── adb-manager.js      # Universal ADB manager
+│   ├── adb-manager.js      # Android device manager
 │   ├── package.json        # Dependencies
-│   └── AdbFileManager/     # Configuration folder
+│   └── lib/                # Core libraries and config
+│       ├── adb/            # ADB tools
+│       ├── config/         # Configuration files
+│       └── i18n/           # Internationalization
 ├── scripts/                # Convenience scripts
+│   ├── start.bat/sh        # Unified launcher
 │   ├── install.bat/sh      # Install dependencies
-│   ├── start-quest.bat/sh  # Start Quest tool
-│   ├── start-manager.bat/sh# Start ADB manager
 │   ├── build.bat/sh        # Build executables
 │   └── README.md           # Scripts documentation
 ├── doc/                    # Documentation
@@ -155,13 +156,13 @@ scripts/build.sh
 npm install -g pkg
 
 # Build for Windows
-pkg src/quest-video.js -t node18-win-x64 -o exe/quest-video.exe
+pkg src/adb-manager.js -t node18-win-x64 -o exe/easyadb.exe
 
 # Build for macOS
-pkg src/quest-video.js -t node18-macos-x64 -o exe/quest-video-macos
+pkg src/adb-manager.js -t node18-macos-x64 -o exe/easyadb-macos
 
 # Build for Linux
-pkg src/quest-video.js -t node18-linux-x64 -o exe/quest-video-linux
+pkg src/adb-manager.js -t node18-linux-x64 -o exe/easyadb-linux
 ```
 
 See [exe/README.md](exe/README.md) and [scripts/README.md](scripts/README.md) for detailed instructions.

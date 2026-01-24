@@ -66,9 +66,9 @@ function getDefaultConfig() {
             author: "一只大菜狗"
         },
         device: {
-            name: "Meta Quest",
-            remotePath: "/sdcard/oculus/VideoShots",
-            fileExtensions: [".mp4", ".MP4"]
+            name: "Android Device",
+            remotePath: "/sdcard/",
+            fileExtensions: ["*"]
         },
         import: {
             localFolder: "Videos",

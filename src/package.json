@@ -20,10 +20,9 @@
   "main": "adb-manager.js",
   "scripts": {
     "start": "node adb-manager.js",
-    "quest": "node quest-video.js",
-    "build:win": "pkg quest-video.js -t node18-win-x64 -o ../exe/quest-video.exe && pkg adb-manager.js -t node18-win-x64 -o ../exe/adb-manager.exe",
-    "build:macos": "pkg quest-video.js -t node18-macos-x64 -o ../exe/quest-video-macos && pkg adb-manager.js -t node18-macos-x64 -o ../exe/adb-manager-macos",
-    "build:linux": "pkg quest-video.js -t node18-linux-x64 -o ../exe/quest-video-linux && pkg adb-manager.js -t node18-linux-x64 -o ../exe/adb-manager-linux",
+    "build:win": "pkg adb-manager.js -t node18-win-x64 -o ../exe/easyadb.exe",
+    "build:macos": "pkg adb-manager.js -t node18-macos-x64 -o ../exe/easyadb-macos",
+    "build:linux": "pkg adb-manager.js -t node18-linux-x64 -o ../exe/easyadb-linux",
     "build:all": "npm run build:win && npm run build:macos && npm run build:linux"
   },
   "pkg": {
