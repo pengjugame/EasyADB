@@ -53,21 +53,18 @@ npm install
 **Using convenience scripts (Recommended)**:
 
 ```bash
-# Windows
-scripts\start-quest.bat      # Quest video manager
-scripts\start-manager.bat    # Universal ADB manager
+# Windows - Start EasyADB (Universal Android device manager)
+scripts\start.bat
 
 # macOS/Linux
-scripts/start-quest.sh       # Quest video manager
-scripts/start-manager.sh     # Universal ADB manager
+scripts/start.sh
 ```
 
 **Manual method**:
 
 ```bash
 cd src
-node quest-video.js    # For Quest devices
-node adb-manager.js    # For general Android devices
+node adb-manager.js    # Universal Android device manager
 ```
 
 ## Usage

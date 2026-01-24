@@ -3,7 +3,7 @@ chcp 65001 >nul
 cd /d "%~dp0\.."
 
 echo ========================================
-echo   EasyADB - Quest 视频管理工具
+echo   EasyADB - Android Device Manager
 echo ========================================
 echo.
 
@@ -15,7 +15,6 @@ if errorlevel 1 (
     echo [错误] 未找到 Node.js
     echo.
     echo 请先安装 Node.js: https://nodejs.org/
-    echo 或运行 scripts\build.bat 生成独立可执行文件
     echo.
     pause
     exit /b 1
@@ -28,6 +27,10 @@ if not exist "node_modules" (
     echo.
 )
 
-node quest-video.js
+REM 直接启动ADB文件管理器
+echo.
+echo 启动 EasyADB 文件管理器...
+echo.
+node adb-manager.js
 
 pause
