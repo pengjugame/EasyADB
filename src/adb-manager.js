@@ -941,12 +941,12 @@ async function mainMenu() {
     const configPath = getConfigPath();
 
     console.log('');
-    console.log(chalk.cyan('  ______                 _____ ____  '));
-    console.log(chalk.cyan(' |  ____|               |  __ \\___ \\ '));
-    console.log(chalk.cyan(' | |__   __ _ ___ _   _ | |  | |__) |'));
-    console.log(chalk.cyan(' |  __| / _` / __| | | || |  | |__ < '));
-    console.log(chalk.cyan(' | |___| (_| \\__ \\ |_| || |__| |__) |'));
-    console.log(chalk.cyan(' |_____|\\__,_|___/\\__,_||_____/_____/ '));
+    console.log(chalk.cyan(' ███████╗ █████╗ ███████╗██╗   ██╗ █████╗ ██████╗ ██████╗ '));
+    console.log(chalk.cyan(' ██╔════╝██╔══██╗██╔════╝╚██╗ ██╔╝██╔══██╗██╔══██╗██╔══██╗'));
+    console.log(chalk.cyan(' █████╗  ███████║███████╗ ╚████╔╝ ███████║██████╔╝██████╔╝'));
+    console.log(chalk.cyan(' ██╔══╝  ██╔══██║╚════██║  ╚██╔╝  ██╔══██║██╔══██╗██╔══██╗'));
+    console.log(chalk.cyan(' ███████╗██║  ██║███████║   ██║   ██║  ██║██████╔╝██████╔╝'));
+    console.log(chalk.cyan(' ╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚═════╝ '));
     console.log('');
     console.log(chalk.white(`  ${title}`));
     console.log(chalk.gray(`  v${version}  by ${author}`));
