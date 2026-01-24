@@ -1,11 +1,11 @@
 {
   "app": {
-    "name": "EasyADB File Manager",
+    "name": "EasyADB",
     "version": "Version",
     "author": "Author"
   },
   "menu": {
-    "main_title": "ADB File Manager - Main Menu",
+    "main_title": "EasyADB - Main Menu",
     "scan_device": "🔍 Scan Device Files",
     "export_files": "📤 Export Files",
     "delete_files": "🗑️  Delete Files",
@@ -113,7 +113,7 @@
     "config_loaded": "Configuration loaded successfully"
   },
   "info": {
-    "welcome": "Welcome to EasyADB File Manager",
+    "welcome": "Welcome to EasyADB",
     "select_option": "Please select an option",
     "press_enter": "Press Enter to continue",
     "loading": "Loading...",

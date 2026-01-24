@@ -6,12 +6,12 @@
 
 [English](README.md) | [中文文档](doc/README_CN.md) | [快速开始](doc/QUICK_START.md)
 
-A powerful and user-friendly ADB file management tool built with Node.js, designed for Android devices (especially Meta Quest). Easily export, delete, and manage files with an interactive command-line interface.
+A powerful and user-friendly ADB file management tool built with Node.js, designed for all Android devices including Meta Quest, smartphones, and tablets. Easily export, delete, and manage files with an interactive command-line interface.
 
 ## Features
 
-- 📹 **Quest Video Manager**: Specialized tool for Meta Quest recordings and screenshots
-- 📁 **Universal ADB Manager**: Manage files on any Android device
+- 📱 **Universal Android Manager**: Manage files on any Android device including Meta Quest
+- 📁 **Smart File Management**: Export, delete, and organize files with advanced filtering
 - 📤 **Smart Export**: Export files with date-based organization
 - 🗑️ **Safe Deletion**: Multiple filtering options with confirmation prompts
 - 🧹 **Quick Cleanup**: Keep recent files and remove old ones

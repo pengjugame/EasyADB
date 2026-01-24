@@ -1,11 +1,11 @@
 {
   "app": {
-    "name": "EasyADB 文件管理器",
+    "name": "EasyADB",
     "version": "版本",
     "author": "作者"
   },
   "menu": {
-    "main_title": "ADB 文件管理器 - 主菜单",
+    "main_title": "EasyADB - 主菜单",
     "scan_device": "🔍 扫描设备文件",
     "export_files": "📤 导出文件",
     "delete_files": "🗑️  删除文件",
@@ -113,7 +113,7 @@
     "config_loaded": "配置加载成功"
   },
   "info": {
-    "welcome": "欢迎使用 EasyADB 文件管理器",
+    "welcome": "欢迎使用 EasyADB",
     "select_option": "请选择一个选项",
     "press_enter": "按回车键继续",
     "loading": "加载中...",

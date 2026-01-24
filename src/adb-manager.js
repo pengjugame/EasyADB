@@ -1,8 +1,8 @@
 /**
- * ADB 文件管理器
- * 通用的 Android 设备文件管理工具
+ * EasyADB - Android Device Manager
+ * Universal Android device file management tool
  *
- * 作者: 一只大菜狗
+ * Author: 一只大菜狗
  */
 
 const { execSync } = require('child_process');
@@ -62,7 +62,7 @@ function loadConfig() {
 function getDefaultConfig() {
     return {
         app: {
-            name: "ADB 文件管理器",
+            name: "EasyADB",
             version: "1.0.0",
             author: "一只大菜狗"
         },
@@ -941,12 +941,12 @@ async function mainMenu() {
     const configPath = getConfigPath();
 
     console.log('');
-    console.log(chalk.cyan('    ___    ____  ____     __  ___                                 '));
-    console.log(chalk.cyan('   /   |  / __ \\/ __ )   /  |/  /___ _____  ____ _____ ____  _____'));
-    console.log(chalk.cyan('  / /| | / / / / __  |  / /|_/ / __ `/ __ \\/ __ `/ __ `/ _ \\/ ___/'));
-    console.log(chalk.cyan(' / ___ |/ /_/ / /_/ /  / /  / / /_/ / / / / /_/ / /_/ /  __/ /    '));
-    console.log(chalk.cyan('/_/  |_/_____/_____/  /_/  /_/\\__,_/_/ /_/\\__,_/\\__, /\\___/_/     '));
-    console.log(chalk.cyan('                                               /____/             '));
+    console.log(chalk.cyan('  ______                 _____ ____  '));
+    console.log(chalk.cyan(' |  ____|               |  __ \\___ \\ '));
+    console.log(chalk.cyan(' | |__   __ _ ___ _   _ | |  | |__) |'));
+    console.log(chalk.cyan(' |  __| / _` / __| | | || |  | |__ < '));
+    console.log(chalk.cyan(' | |___| (_| \\__ \\ |_| || |__| |__) |'));
+    console.log(chalk.cyan(' |_____|\\__,_|___/\\__,_||_____/_____/ '));
     console.log('');
     console.log(chalk.white(`  ${title}`));
     console.log(chalk.gray(`  v${version}  by ${author}`));
