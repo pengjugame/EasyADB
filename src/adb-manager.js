@@ -941,12 +941,9 @@ async function mainMenu() {
     const configPath = getConfigPath();
 
     console.log('');
-    console.log(chalk.cyan(' ███████╗ █████╗ ███████╗██╗   ██╗ █████╗ ██████╗ ██████╗ '));
-    console.log(chalk.cyan(' ██╔════╝██╔══██╗██╔════╝╚██╗ ██╔╝██╔══██╗██╔══██╗██╔══██╗'));
-    console.log(chalk.cyan(' █████╗  ███████║███████╗ ╚████╔╝ ███████║██████╔╝██████╔╝'));
-    console.log(chalk.cyan(' ██╔══╝  ██╔══██║╚════██║  ╚██╔╝  ██╔══██║██╔══██╗██╔══██╗'));
-    console.log(chalk.cyan(' ███████╗██║  ██║███████║   ██║   ██║  ██║██████╔╝██████╔╝'));
-    console.log(chalk.cyan(' ╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚═════╝ '));
+    console.log('  ____   __    __   _     __    ___   ___ ');
+    console.log(' | |_   / /\\  ( (` \\ \\_/ / /\\  | | \\ | |_)');
+    console.log(' |_|__ /_/--\\ _)_)  |_| /_/--\\ |_|_/ |_|_)');
     console.log('');
     console.log(chalk.white(`  ${title}`));
     console.log(chalk.gray(`  v${version}  by ${author}`));
