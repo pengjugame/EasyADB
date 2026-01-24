@@ -290,15 +290,15 @@ function checkAdbConnection() {
         console.log(chalk.red('\n❌ 找不到 ADB 命令'));
 
         if (hasLocalAdb()) {
-            console.log(chalk.yellow('   本地 ADB 文件可能损坏，请重新复制'));
+            console.log(chalk.yellow(`   ${i18n.t('adb.local_adb_corrupt')}`));
         } else {
-            console.log(chalk.yellow('\n   解决方案:'));
-            console.log(chalk.yellow('   方案1: 将 ADB 文件放到程序目录的 adb 文件夹'));
+            console.log(chalk.yellow(`\n   ${i18n.t('adb.solutions')}:`));
+            console.log(chalk.yellow(`   ${i18n.t('adb.solution1')}`));
             console.log(chalk.gray('          adb/adb.exe'));
             console.log(chalk.gray('          adb/AdbWinApi.dll'));
             console.log(chalk.gray('          adb/AdbWinUsbApi.dll'));
-            console.log(chalk.yellow('\n   方案2: 安装 Android SDK Platform Tools 并添加到 PATH'));
-            console.log(chalk.gray('          下载: https://developer.android.com/studio/releases/platform-tools'));
+            console.log(chalk.yellow(`\n   ${i18n.t('adb.solution2')}`));
+            console.log(chalk.gray(`          ${i18n.t('adb.download_url')}`));
         }
         return false;
     }
@@ -306,7 +306,7 @@ function checkAdbConnection() {
     // 获取设备列表
     const devices = adbExec('devices', true);
     if (!devices) {
-        console.log(chalk.red('\n❌ ADB 命令执行失败'));
+        console.log(chalk.red(`\n❌ ${i18n.t('adb.command_failed')}`));
         return false;
     }
 
@@ -317,43 +317,43 @@ function checkAdbConnection() {
 
     // 处理未授权设备
     if (unauthorizedDevices.length > 0) {
-        console.log(chalk.yellow('\n⚠️  检测到未授权的设备'));
-        console.log(chalk.cyan('\n   请在设备上完成授权:'));
-        console.log(chalk.white('   1. 查看设备屏幕，应该有 USB 调试授权弹窗'));
-        console.log(chalk.white('   2. 勾选「总是允许使用这台计算机进行调试」'));
-        console.log(chalk.white('   3. 点击「允许」或「确定」'));
-        console.log(chalk.gray('\n   如果没有弹窗，请尝试:'));
-        console.log(chalk.gray('   - 重新插拔 USB 数据线'));
-        console.log(chalk.gray('   - 在设备的开发者选项中撤销 USB 调试授权，然后重新连接'));
+        console.log(chalk.yellow(`\n⚠️  ${i18n.t('adb.unauthorized_title')}`));
+        console.log(chalk.cyan(`\n   ${i18n.t('adb.unauthorized_desc')}`));
+        console.log(chalk.white(`   ${i18n.t('adb.unauthorized_step1')}`));
+        console.log(chalk.white(`   ${i18n.t('adb.unauthorized_step2')}`));
+        console.log(chalk.white(`   ${i18n.t('adb.unauthorized_step3')}`));
+        console.log(chalk.gray(`\n   ${i18n.t('adb.unauthorized_help')}`));
+        console.log(chalk.gray(`   ${i18n.t('adb.unauthorized_help1')}`));
+        console.log(chalk.gray(`   ${i18n.t('adb.unauthorized_help2')}`));
         return false;
     }
 
     // 处理离线设备
     if (offlineDevices.length > 0 && connectedDevices.length === 0) {
-        console.log(chalk.yellow('\n⚠️  设备处于离线状态'));
-        console.log(chalk.cyan('   请尝试:'));
-        console.log(chalk.white('   1. 重新插拔 USB 数据线'));
-        console.log(chalk.white('   2. 在设备上重新启用 USB 调试'));
-        console.log(chalk.white('   3. 重启 ADB 服务 (运行: adb kill-server && adb start-server)'));
+        console.log(chalk.yellow(`\n⚠️  ${i18n.t('adb.offline_title')}`));
+        console.log(chalk.cyan(`   ${i18n.t('adb.offline_desc')}`));
+        console.log(chalk.white(`   ${i18n.t('adb.offline_step1')}`));
+        console.log(chalk.white(`   ${i18n.t('adb.offline_step2')}`));
+        console.log(chalk.white(`   ${i18n.t('adb.offline_step3')}`));
         return false;
     }
 
     // 没有设备
     if (connectedDevices.length === 0) {
-        console.log(chalk.red(`\n❌ 未检测到设备`));
-        console.log(chalk.yellow('\n   请确保:'));
-        console.log(chalk.white('   1. 设备已通过 USB 连接到电脑'));
-        console.log(chalk.white('   2. 设备已开启 USB 调试 (开发者选项中)'));
-        console.log(chalk.white('   3. 使用的是数据线而不是仅充电线'));
+        console.log(chalk.red(`\n❌ ${i18n.t('adb.no_device_title')}`));
+        console.log(chalk.yellow(`\n   ${i18n.t('adb.no_device_desc')}`));
+        console.log(chalk.white(`   ${i18n.t('adb.no_device_step1')}`));
+        console.log(chalk.white(`   ${i18n.t('adb.no_device_step2')}`));
+        console.log(chalk.white(`   ${i18n.t('adb.no_device_step3')}`));
 
         if (unauthorizedDevices.length === 0 && offlineDevices.length === 0) {
-            console.log(chalk.gray('\n   对于 Meta Quest:'));
-            console.log(chalk.gray('   - 戴上头显，在弹出的对话框中点击「允许」'));
+            console.log(chalk.gray(`\n   ${i18n.t('adb.quest_help')}`));
+            console.log(chalk.gray(`   ${i18n.t('adb.quest_help1')}`));
         }
         return false;
     }
 
-    console.log(chalk.green(`  ✓ 已连接设备: ${connectedDevices.length} 台`));
+    console.log(chalk.green(`  ✓ ${i18n.t('adb.connected_devices', { count: connectedDevices.length })}`));
     return true;
 }
 
@@ -363,8 +363,8 @@ function getFileList() {
     const remotePath = CONFIG.device.remotePath;
     const extensions = CONFIG.device.fileExtensions;
 
-    console.log(chalk.cyan(`\n正在扫描 ${CONFIG.device.name}...`));
-    console.log(chalk.gray(`路径: ${remotePath}`));
+    console.log(chalk.cyan(`\n${i18n.t('device.scanning')} ${CONFIG.device.name}...`));
+    console.log(chalk.gray(`${i18n.t('file.path')}: ${remotePath}`));
 
     const lsResult = adbShell(`ls -laR ${remotePath}`, true);
 
@@ -410,7 +410,7 @@ function getFileList() {
     }
 
     files.sort((a, b) => b.date - a.date);
-    console.log(chalk.green(`找到 ${files.length} 个文件`));
+    console.log(chalk.green(i18n.t('device.files_found', { count: files.length })));
 
     return files;
 }
@@ -419,7 +419,7 @@ function getFileList() {
 
 function displayFileTable(files, title = '文件列表') {
     if (files.length === 0) {
-        console.log(chalk.yellow('\n没有找到文件'));
+        console.log(chalk.yellow(`\n${i18n.t('device.no_files')}`));
         return;
     }
 
@@ -446,13 +446,13 @@ function displayFileTable(files, title = '文件列表') {
         ]);
     });
 
-    console.log(chalk.green(`\n=== ${title} (共 ${files.length} 个) ===`));
+    console.log(chalk.green(`\n=== ${title} (${files.length} ${i18n.t('file.type')}) ===`));
     console.log(table.toString());
 
     const totalSizeStr = totalSize >= 1024 * 1024 * 1024
         ? (totalSize / (1024 * 1024 * 1024)).toFixed(2) + ' GB'
         : (totalSize / (1024 * 1024)).toFixed(1) + ' MB';
-    console.log(chalk.cyan(`总大小: ${totalSizeStr}`));
+    console.log(chalk.cyan(`${i18n.t('file.total_size')}: ${totalSizeStr}`));
 }
 
 // ========== 筛选 ==========
@@ -498,7 +498,7 @@ function filterFiles(files, filters) {
 
 async function importFiles(files) {
     if (files.length === 0) {
-        console.log(chalk.yellow('没有要导入的文件'));
+        console.log(chalk.yellow(i18n.t('file.no_files_to_import')));
         return;
     }
 
@@ -515,7 +515,7 @@ async function importFiles(files) {
         fs.mkdirSync(localDir, { recursive: true });
     }
 
-    console.log(chalk.cyan(`\n开始导入 ${files.length} 个文件到: ${localDir}`));
+    console.log(chalk.cyan(`\n${i18n.t('file.starting_import', { count: files.length, dir: localDir })}`));
 
     let success = 0;
     let failed = 0;
@@ -547,19 +547,19 @@ async function importFiles(files) {
         }
     }
 
-    console.log(chalk.green(`\n导入完成: ${success} 成功, ${failed} 失败`));
-    console.log(chalk.cyan(`保存位置: ${localDir}`));
+    console.log(chalk.green(`\n${i18n.t('file.import_complete', { success, failed })}`));
+    console.log(chalk.cyan(`${i18n.t('file.save_location')}: ${localDir}`));
 }
 
 // ========== 删除 ==========
 
 async function deleteFiles(files) {
     if (files.length === 0) {
-        console.log(chalk.yellow('没有要删除的文件'));
+        console.log(chalk.yellow(i18n.t('file.no_files_to_delete')));
         return;
     }
 
-    console.log(chalk.red(`\n开始删除 ${files.length} 个文件...`));
+    console.log(chalk.red(`\n${i18n.t('file.starting_delete', { count: files.length })}`));
 
     let success = 0;
     let failed = 0;
@@ -580,7 +580,7 @@ async function deleteFiles(files) {
         }
     }
 
-    console.log(chalk.green(`\n删除完成: ${success} 成功, ${failed} 失败`));
+    console.log(chalk.green(`\n${i18n.t('file.delete_complete', { success, failed })}`));
 }
 
 // ========== 筛选菜单 ==========
@@ -612,15 +612,15 @@ async function selectFilters(files, action) {
     const { filterType } = await inquirer.prompt([{
         type: 'list',
         name: 'filterType',
-        message: '选择筛选方式:',
+        message: i18n.t('file.select_filter_type'),
         choices: [
-            { name: '↩️  返回上级', value: 'back' },
+            { name: `↩️  ${i18n.t('settings.back')}`, value: 'back' },
             new inquirer.Separator('────────────'),
-            { name: `🚀 全部${action} (${files.length}个, ${totalSizeStr})`, value: 'all' },
-            { name: '📅 按日期筛选', value: 'date' },
-            { name: '📦 按来源筛选', value: 'source' },
-            { name: '🎯 同时按日期和来源', value: 'both' },
-            { name: '✅ 手动勾选', value: 'manual' }
+            { name: `🚀 ${i18n.t('file.all_files', { action: action, count: files.length, size: totalSizeStr })}`, value: 'all' },
+            { name: `📅 ${i18n.t('file.filter_by_date')}`, value: 'date' },
+            { name: `📦 ${i18n.t('file.filter_by_source')}`, value: 'source' },
+            { name: `🎯 ${i18n.t('file.filter_by_both')}`, value: 'both' },
+            { name: `✅ ${i18n.t('file.manual_select')}`, value: 'manual' }
         ]
     }]);
 
@@ -633,7 +633,7 @@ async function selectFilters(files, action) {
     if (filterType === 'manual') {
         displayFileTable(files, '所有文件');
 
-        console.log(chalk.gray('  操作: 空格=选择  A=全选  回车=确认  (不选直接回车=返回)'));
+        console.log(chalk.gray(`  ${i18n.t('file.operation_guide')}`));
         const { selectedFiles } = await inquirer.prompt([{
             type: 'checkbox',
             name: 'selectedFiles',
@@ -656,7 +656,7 @@ async function selectFilters(files, action) {
         const { dateOption } = await inquirer.prompt([{
             type: 'list',
             name: 'dateOption',
-            message: '选择日期范围:',
+            message: i18n.t('file.select_date_range'),
             choices: dateChoices
         }]);
 
@@ -665,11 +665,11 @@ async function selectFilters(files, action) {
         const selected = dateChoices.find(c => c.value === dateOption);
 
         if (dateOption === 'custom') {
-            console.log(chalk.gray('  操作: 空格=选择  A=全选  回车=确认  (不选直接回车=返回)'));
+            console.log(chalk.gray(`  ${i18n.t('file.operation_guide')}`));
             const { selectedDates } = await inquirer.prompt([{
                 type: 'checkbox',
                 name: 'selectedDates',
-                message: '选择日期:',
+                message: i18n.t('file.select_date'),
                 choices: dates.map(d => ({ name: d, value: d })),
                 pageSize: 15
             }]);
@@ -688,11 +688,11 @@ async function selectFilters(files, action) {
             sourceCounts[f.sourceName] = (sourceCounts[f.sourceName] || 0) + 1;
         });
 
-        console.log(chalk.gray('  操作: 空格=选择  A=全选  回车=确认  (不选直接回车=返回)'));
+        console.log(chalk.gray(`  ${i18n.t('file.operation_guide')}`));
         const { selectedSources } = await inquirer.prompt([{
             type: 'checkbox',
             name: 'selectedSources',
-            message: '选择来源:',
+            message: i18n.t('file.select_source'),
             choices: sources.map(s => ({
                 name: `${s} (${sourceCounts[s]} 个)`,
                 value: s
@@ -705,12 +705,12 @@ async function selectFilters(files, action) {
     let filteredFiles = filterFiles(files, filters);
 
     if (filteredFiles.length === 0) {
-        console.log(chalk.yellow('\n没有符合筛选条件的文件'));
+        console.log(chalk.yellow(`\n${i18n.t('file.no_files_match')}`));
         return [];
     }
 
     // 显示筛选结果并让用户确认选择
-    displayFileTable(filteredFiles, '筛选结果');
+    displayFileTable(filteredFiles, i18n.t('file.filter_results'));
 
     console.log(chalk.gray('  操作: 空格=选择  A=全选  回车=确认  (不选直接回车=返回)'));
     const { selectedFiles } = await inquirer.prompt([{
@@ -759,7 +759,7 @@ async function cleanupDevice(files) {
     }
 
     if (toDelete.length === 0) {
-        console.log(chalk.yellow('\n没有符合条件的文件需要删除'));
+        console.log(chalk.yellow(`\n${i18n.t('file.no_files_match')}`));
         return;
     }
 
@@ -767,25 +767,25 @@ async function cleanupDevice(files) {
 
     const totalSize = toDelete.reduce((sum, f) => sum + f.size, 0);
     const sizeStr = (totalSize / (1024 * 1024 * 1024)).toFixed(2);
-    console.log(chalk.red(`\n⚠️  将删除 ${toDelete.length} 个文件，释放 ${sizeStr} GB`));
+    console.log(chalk.red(`\n⚠️  ${i18n.t('file.cleanup_warning', { count: toDelete.length, size: sizeStr })}`));
 
     const { confirm } = await inquirer.prompt([{
         type: 'confirm',
         name: 'confirm',
-        message: '确认删除?',
+        message: i18n.t('confirm.delete_files'),
         default: false
     }]);
 
     if (confirm) {
         await deleteFiles(toDelete);
     } else {
-        console.log(chalk.yellow('已取消'));
+        console.log(chalk.yellow(i18n.t('confirm.cancel')));
     }
 }
 
 // ========== 设置菜单 ==========
 
-async function confirmAndSaveConfig(config, message = '确认保存设置?') {
+async function confirmAndSaveConfig(config, message = i18n.t('confirm.save_settings')) {
     const { confirm } = await inquirer.prompt([{
         type: 'confirm',
         name: 'confirm',
@@ -795,11 +795,11 @@ async function confirmAndSaveConfig(config, message = '确认保存设置?') {
 
     if (confirm) {
         if (saveConfig(config)) {
-            console.log(chalk.green('✓ 设置已保存'));
+            console.log(chalk.green(`✓ ${i18n.t('settings.save_success')}`));
             return true;
         }
     } else {
-        console.log(chalk.yellow('已取消'));
+        console.log(chalk.yellow(i18n.t('confirm.cancel')));
     }
     return false;
 }
@@ -810,7 +810,7 @@ async function settingsMenu() {
 
     while (true) {
         console.log('');
-        console.log(chalk.gray(`  配置文件: ${configPath}`));
+        console.log(chalk.gray(`  ${i18n.t('settings.current_config')}: ${configPath}`));
         console.log('');
 
         const { setting } = await inquirer.prompt([{
@@ -818,18 +818,19 @@ async function settingsMenu() {
             name: 'setting',
             message: '设置:',
             choices: [
-                { name: '↩️  返回上级', value: 'back' },
-                new inquirer.Separator('── 当前配置 ──'),
-                { name: `📱 设备名称: ${CONFIG.device.name}`, value: 'device' },
-                { name: `📂 远程路径: ${CONFIG.device.remotePath}`, value: 'path' },
-                { name: `📄 文件类型: ${CONFIG.device.fileExtensions.join(', ')}`, value: 'extensions' },
-                new inquirer.Separator('── 快速切换 ──'),
+                { name: `↩️  ${i18n.t('settings.back')}`, value: 'back' },
+                new inquirer.Separator(`── ${i18n.t('settings.current_config')} ──`),
+                { name: `🌐 ${i18n.t('settings.language')}: ${i18n.getCurrentLanguage().toUpperCase()}`, value: 'language' },
+                { name: `📱 ${i18n.t('settings.device_name')}: ${CONFIG.device.name}`, value: 'device' },
+                { name: `📂 ${i18n.t('settings.remote_path')}: ${CONFIG.device.remotePath}`, value: 'path' },
+                { name: `📄 ${i18n.t('settings.file_extensions').split(' (')[0]}: ${CONFIG.device.fileExtensions.join(', ')}`, value: 'extensions' },
+                new inquirer.Separator(`── ${i18n.t('settings.quick_switch')} ──`),
                 ...presetKeys.map(key => ({
                     name: `🔹 ${CONFIG.presets[key].name}`,
                     value: `preset_${key}`
                 })),
-                new inquirer.Separator('── 其它 ──'),
-                { name: '🔄 恢复默认配置', value: 'restore' }
+                new inquirer.Separator(`── ${i18n.t('settings.others')} ──`),
+                { name: `🔄 ${i18n.t('settings.restore_default')}`, value: 'restore' }
             ]
         }]);
 
@@ -837,23 +838,47 @@ async function settingsMenu() {
             return; // 返回但不重启
         }
 
+        if (setting === 'language') {
+            const supportedLanguages = i18n.getSupportedLanguages();
+            const languageChoices = Object.entries(supportedLanguages).map(([code, name]) => ({
+                name: `${name} (${code.toUpperCase()})`,
+                value: code
+            }));
+
+            const { selectedLanguage } = await inquirer.prompt([{
+                type: 'list',
+                name: 'selectedLanguage',
+                message: i18n.t('language.select_language'),
+                choices: languageChoices
+            }]);
+
+            if (i18n.switchLanguage(selectedLanguage)) {
+                console.log(chalk.green(`✓ ${i18n.t('language.language_changed', { lang: supportedLanguages[selectedLanguage] })}`));
+                console.log(chalk.yellow(i18n.t('language.restart_required')));
+                return mainMenu(); // 重新加载主菜单以应用新语言
+            } else {
+                console.log(chalk.red(`✗ ${i18n.t('settings.switch_failed')}`));
+            }
+            continue;
+        }
+
         if (setting === 'restore') {
-            console.log(chalk.yellow('\n⚠️  这将恢复所有设置为默认值'));
+            console.log(chalk.yellow(`\n⚠️  ${i18n.t('settings.restore_warning')}`));
 
             const { confirm } = await inquirer.prompt([{
                 type: 'confirm',
                 name: 'confirm',
-                message: '确认恢复默认配置?',
+                message: i18n.t('settings.confirm_restore'),
                 default: false
             }]);
 
             if (confirm) {
                 CONFIG = restoreDefaultConfig();
                 if (saveConfig(CONFIG)) {
-                    console.log(chalk.green('✓ 已恢复默认配置'));
+                    console.log(chalk.green(`✓ ${i18n.t('settings.restore_success')}`));
                 }
             } else {
-                console.log(chalk.yellow('已取消'));
+                console.log(chalk.yellow(i18n.t('confirm.cancel')));
             }
             continue;
         }
@@ -862,9 +887,9 @@ async function settingsMenu() {
             const presetKey = setting.replace('preset_', '');
             const preset = CONFIG.presets[presetKey];
 
-            console.log(chalk.cyan(`\n将切换到: ${preset.name}`));
-            console.log(chalk.gray(`  路径: ${preset.remotePath}`));
-            console.log(chalk.gray(`  类型: ${preset.fileExtensions.join(', ')}`));
+            console.log(chalk.cyan(`\n${i18n.t('settings.confirm_switch')}: ${preset.name}`));
+            console.log(chalk.gray(`  ${i18n.t('settings.remote_path')}: ${preset.remotePath}`));
+            console.log(chalk.gray(`  ${i18n.t('settings.file_extensions').split(' (')[0]}: ${preset.fileExtensions.join(', ')}`));
 
             const { confirm } = await inquirer.prompt([{
                 type: 'confirm',
@@ -878,7 +903,7 @@ async function settingsMenu() {
                 CONFIG.device.remotePath = preset.remotePath;
                 CONFIG.device.fileExtensions = preset.fileExtensions;
                 saveConfig(CONFIG);
-                console.log(chalk.green(`✓ 已切换到: ${preset.name}`));
+                console.log(chalk.green(`✓ ${i18n.t('settings.switch_success', { name: preset.name })}`));
             }
             continue;
         }
@@ -887,7 +912,7 @@ async function settingsMenu() {
             const { newName } = await inquirer.prompt([{
                 type: 'input',
                 name: 'newName',
-                message: '设备名称:',
+                message: i18n.t('settings.device_name') + ':',
                 default: CONFIG.device.name
             }]);
 
@@ -902,7 +927,7 @@ async function settingsMenu() {
             const { newPath } = await inquirer.prompt([{
                 type: 'input',
                 name: 'newPath',
-                message: '远程路径:',
+                message: i18n.t('settings.remote_path') + ':',
                 default: CONFIG.device.remotePath
             }]);
 
@@ -917,7 +942,7 @@ async function settingsMenu() {
             const { newExt } = await inquirer.prompt([{
                 type: 'input',
                 name: 'newExt',
-                message: '文件扩展名 (逗号分隔, * 表示全部):',
+                message: i18n.t('settings.file_extensions') + ':',
                 default: CONFIG.device.fileExtensions.join(', ')
             }]);
 
@@ -958,7 +983,7 @@ async function mainMenu() {
         const { retry } = await inquirer.prompt([{
             type: 'confirm',
             name: 'retry',
-            message: '是否重试?',
+            message: i18n.t('confirm.yes') + '/' + i18n.t('confirm.no').toLowerCase(),
             default: true
         }]);
         if (retry) return mainMenu();
@@ -968,13 +993,13 @@ async function mainMenu() {
     let files = getFileList();
 
     if (files.length === 0) {
-        console.log(chalk.yellow('\n设备上没有找到文件'));
-        console.log(chalk.cyan(`检查路径: ${CONFIG.device.remotePath}`));
+        console.log(chalk.yellow(`\n${i18n.t('device.no_files')}`));
+        console.log(chalk.cyan(`${i18n.t('device.check_path')}: ${CONFIG.device.remotePath}`));
 
         const { goSettings } = await inquirer.prompt([{
             type: 'confirm',
             name: 'goSettings',
-            message: '是否进入设置修改路径?',
+            message: i18n.t('settings.enter_settings'),
             default: true
         }]);
 
@@ -985,19 +1010,20 @@ async function mainMenu() {
         return;
     }
 
-    console.log(chalk.cyan(`\n发现 ${files.length} 个文件`));
+    console.log(chalk.cyan(`\n${i18n.t('device.file_count', { count: files.length })}`));
 
     while (true) {
         const { action } = await inquirer.prompt([{
             type: 'list',
             name: 'action',
-            message: '请选择操作:',
+            message: i18n.t('menu.main_title'),
             choices: [
-                { name: '📋 查看文件列表', value: 'list' },
-                { name: '📥 导入文件到电脑', value: 'import' },
-                { name: '🗑️  删除设备文件', value: 'delete' },
-                { name: '🧹 清理设备（保留最近X天）', value: 'cleanup' },
-                { name: '⚙️  设置', value: 'settings' },
+                { name: `📋 ${i18n.t('menu.scan_device')}`, value: 'list' },
+                { name: `📥 ${i18n.t('menu.export_files')}`, value: 'import' },
+                { name: `🗑️  ${i18n.t('menu.delete_files')}`, value: 'delete' },
+                { name: `🧹 ${i18n.t('menu.cleanup_old')}`, value: 'cleanup' },
+                { name: '🔄 切换设备配置', value: 'switch_device' },
+                { name: `⚙️  ${i18n.t('menu.settings')}`, value: 'settings' },
                 { name: '🔄 刷新', value: 'refresh' },
                 { name: '❌ 退出', value: 'exit' }
             ],
@@ -1007,6 +1033,57 @@ async function mainMenu() {
         switch (action) {
             case 'list':
                 displayFileTable(files);
+                // 文件列表查看后的操作菜单
+                const { afterListAction } = await inquirer.prompt([{
+                    type: 'list',
+                    name: 'afterListAction',
+                    message: '文件列表操作:',
+                    choices: [
+                        { name: `⬅️  ${i18n.t('menu.back')}`, value: 'back' },
+                        { name: `📥 ${i18n.t('menu.export_files')}`, value: 'import_from_list' },
+                        { name: `🗑️  ${i18n.t('menu.delete_files')}`, value: 'delete_from_list' },
+                        { name: '🔄 刷新列表', value: 'refresh' }
+                    ]
+                }]);
+
+                if (afterListAction === 'back') {
+                    break; // 返回主菜单
+                } else if (afterListAction === 'import_from_list') {
+                    const toImport = await selectFilters(files, '导入');
+                    if (toImport && toImport.length > 0) {
+                        const { confirm } = await inquirer.prompt([{
+                            type: 'confirm',
+                            name: 'confirm',
+                            message: i18n.t('file.delete_confirm', { count: toImport.length }),
+                            default: true
+                        }]);
+                        if (confirm) {
+                            await importFiles(toImport);
+                        }
+                    }
+                } else if (afterListAction === 'delete_from_list') {
+                    const toDelete = await selectFilters(files, '删除');
+                    if (toDelete && toDelete.length > 0) {
+                        const { confirm } = await inquirer.prompt([{
+                            type: 'confirm',
+                            name: 'confirm',
+                            message: i18n.t('file.delete_confirm', { count: toDelete.length }),
+                            default: false
+                        }]);
+                        if (confirm) {
+                            await deleteFiles(toDelete);
+                        }
+                    }
+                } else if (afterListAction === 'refresh') {
+                    // 重新加载文件列表
+                    console.log(chalk.cyan(`\n${i18n.t('settings.refreshing_list')}`));
+                    files = getFileList();
+                    if (files.length === 0) {
+                        console.log(chalk.yellow(i18n.t('device.no_files')));
+                    } else {
+                        console.log(chalk.cyan(i18n.t('device.files_found', { count: files.length })));
+                    }
+                }
                 break;
 
             case 'import':
@@ -1015,7 +1092,7 @@ async function mainMenu() {
                     const { confirm } = await inquirer.prompt([{
                         type: 'confirm',
                         name: 'confirm',
-                        message: `确认导入 ${toImport.length} 个文件?`,
+                            message: i18n.t('confirm.import_files', { count: toImport.length }),
                         default: true
                     }]);
                     if (confirm) await importFiles(toImport);
@@ -1027,7 +1104,7 @@ async function mainMenu() {
                 if (toDelete && toDelete.length > 0) {
                     const totalSize = toDelete.reduce((sum, f) => sum + f.size, 0);
                     const sizeStr = (totalSize / (1024 * 1024 * 1024)).toFixed(2);
-                    console.log(chalk.red(`\n⚠️  将删除 ${toDelete.length} 个文件，释放 ${sizeStr} GB`));
+                    console.log(chalk.red(`\n⚠️  ${i18n.t('file.cleanup_warning', { count: toDelete.length, size: sizeStr })}`));
 
                     const { confirm } = await inquirer.prompt([{
                         type: 'confirm',
@@ -1062,6 +1139,64 @@ async function mainMenu() {
                 }
                 break;
 
+            case 'switch_device':
+                // 切换设备配置 - 显示预设选择菜单
+                const presetKeys = Object.keys(CONFIG.presets);
+                const deviceChoices = presetKeys.map(key => ({
+                    name: `🔹 ${CONFIG.presets[key].name} (${CONFIG.presets[key].remotePath})`,
+                    value: key
+                }));
+
+                const { selectedPreset } = await inquirer.prompt([{
+                    type: 'list',
+                    name: 'selectedPreset',
+                    message: '选择设备配置:',
+                    choices: [
+                        ...deviceChoices,
+                        new inquirer.Separator(),
+                        { name: '⚙️ 进入详细设置', value: 'advanced' },
+                        { name: `⬅️  ${i18n.t('menu.cancel')}`, value: 'cancel' }
+                    ]
+                }]);
+
+                if (selectedPreset === 'cancel') {
+                    break; // 返回主菜单
+                } else if (selectedPreset === 'advanced') {
+                    await settingsMenu();
+                    return mainMenu(); // 设置后重新加载主菜单
+                } else {
+                    // 切换到选择的预设
+                    const preset = CONFIG.presets[selectedPreset];
+                    console.log(chalk.cyan(`\n将切换到: ${preset.name}`));
+                    console.log(chalk.gray(`  路径: ${preset.remotePath}`));
+                    console.log(chalk.gray(`  类型: ${preset.fileExtensions.join(', ')}`));
+
+                    const { confirm } = await inquirer.prompt([{
+                        type: 'confirm',
+                        name: 'confirm',
+                        message: i18n.t('confirm.switch_device'),
+                        default: true
+                    }]);
+
+                    if (confirm) {
+                        CONFIG.device.name = preset.name;
+                        CONFIG.device.remotePath = preset.remotePath;
+                        CONFIG.device.fileExtensions = preset.fileExtensions;
+                        saveConfig(CONFIG);
+                        console.log(chalk.green(`✓ ${i18n.t('settings.switch_success', { name: preset.name })}`));
+
+                        // 重新加载文件列表
+                        console.log(chalk.cyan(`\n${i18n.t('settings.refreshing_list')}`));
+                        files = getFileList();
+                        if (files.length === 0) {
+                            console.log(chalk.yellow(i18n.t('device.no_files')));
+                        } else {
+                            console.log(chalk.cyan(i18n.t('device.files_found', { count: files.length })));
+                        }
+                    }
+                }
+                break;
+
             case 'refresh':
                 return mainMenu();
 
@@ -1079,6 +1214,6 @@ const configPath = getConfigPath();
 i18n.init(configPath);
 
 mainMenu().catch(err => {
-    console.error(chalk.red('发生错误:'), err.message);
+    console.error(chalk.red(i18n.t('error.generic')), err.message);
     process.exit(1);
 });

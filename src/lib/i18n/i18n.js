@@ -25,7 +25,7 @@ let currentLanguage = DEFAULT_LANGUAGE;
 let translations = {};
 
 // 配置文件路径
-let configPath = null;
+let globalConfigPath = null;
 
 /**
  * 设置配置文件路径
@@ -65,7 +65,7 @@ function loadLanguage(lang) {
  * @param {string} lang - 语言代码
  */
 function saveLanguageSetting(lang) {
-  if (!this.configPath) {
+  if (!globalConfigPath) {
     console.warn('配置文件路径未设置，无法保存语言设置');
     return;
   }
@@ -74,15 +74,15 @@ function saveLanguageSetting(lang) {
     let config = {};
 
     // 读取现有配置
-    if (fs.existsSync(this.configPath)) {
-      config = JSON.parse(fs.readFileSync(this.configPath, 'utf8'));
+    if (fs.existsSync(globalConfigPath)) {
+      config = JSON.parse(fs.readFileSync(globalConfigPath, 'utf8'));
     }
 
     // 更新语言设置
     config.language = lang;
 
     // 写入配置文件
-    fs.writeFileSync(this.configPath, JSON.stringify(config, null, 2), 'utf8');
+    fs.writeFileSync(globalConfigPath, JSON.stringify(config, null, 2), 'utf8');
   } catch (error) {
     console.error('保存语言设置失败:', error);
   }
@@ -93,12 +93,12 @@ function saveLanguageSetting(lang) {
  * @returns {string} 语言代码
  */
 function loadLanguageSetting() {
-  if (!this.configPath || !fs.existsSync(this.configPath)) {
+  if (!globalConfigPath || !fs.existsSync(globalConfigPath)) {
     return DEFAULT_LANGUAGE;
   }
 
   try {
-    const config = JSON.parse(fs.readFileSync(this.configPath, 'utf8'));
+    const config = JSON.parse(fs.readFileSync(globalConfigPath, 'utf8'));
     return config.language || DEFAULT_LANGUAGE;
   } catch (error) {
     console.error('加载语言设置失败:', error);
@@ -111,7 +111,7 @@ function loadLanguageSetting() {
  * @param {string} configPath - 配置文件路径
  */
 function init(configPath) {
-  this.configPath = configPath;
+  globalConfigPath = configPath;
 
   // 加载用户保存的语言设置
   const savedLang = loadLanguageSetting();

@@ -5,10 +5,11 @@
     "author": "一只大菜狗"
   },
   "device": {
-    "name": "Meta Quest 3 录屏",
-    "remotePath": "/sdcard/oculus/VideoShots",
+    "name": "Meta Quest 3 Screenshots",
+    "remotePath": "/sdcard/oculus/Screenshots",
     "fileExtensions": [
-      ".mp4"
+      ".jpg",
+      ".png"
     ]
   },
   "import": {
@@ -21,16 +22,17 @@
     "extractAppNameFromFilename": true,
     "appNameSegments": 2
   },
+  "language": "en",
   "presets": {
     "MetaQuest3_Videos": {
-      "name": "Meta Quest 3 录屏",
+      "name": "Meta Quest 3 Videos",
       "remotePath": "/sdcard/oculus/VideoShots",
       "fileExtensions": [
         ".mp4"
       ]
     },
     "MetaQuest3_Screenshots": {
-      "name": "Meta Quest 3 截图",
+      "name": "Meta Quest 3 Screenshots",
       "remotePath": "/sdcard/oculus/Screenshots",
       "fileExtensions": [
         ".jpg",
@@ -38,7 +40,7 @@
       ]
     },
     "Android_DCIM": {
-      "name": "安卓相册",
+      "name": "Android Camera",
       "remotePath": "/sdcard/DCIM/Camera",
       "fileExtensions": [
         ".jpg",
@@ -47,7 +49,7 @@
       ]
     },
     "Android_Download": {
-      "name": "安卓下载",
+      "name": "Android Download",
       "remotePath": "/sdcard/Download",
       "fileExtensions": [
         "*"
