@@ -734,17 +734,17 @@ async function cleanupDevice(files) {
     const { keepDays } = await inquirer.prompt([{
         type: 'list',
         name: 'keepDays',
-        message: '保留最近几天的文件?',
+        message: i18n.t('file.keep_days_question'),
         choices: [
-            { name: '↩️  返回上级', value: 'back' },
+            { name: `↩️  ${i18n.t('settings.back')}`, value: 'back' },
             new inquirer.Separator('────────────'),
-            { name: '保留今天', value: 0 },
-            { name: '保留最近3天', value: 3 },
-            { name: '保留最近7天', value: 7 },
-            { name: '保留最近14天', value: 14 },
-            { name: '保留最近30天', value: 30 },
+            { name: i18n.t('file.keep_today'), value: 0 },
+            { name: i18n.t('file.keep_last_3_days'), value: 3 },
+            { name: i18n.t('file.keep_last_7_days'), value: 7 },
+            { name: i18n.t('file.keep_last_14_days'), value: 14 },
+            { name: i18n.t('file.keep_last_30_days'), value: 30 },
             new inquirer.Separator('────────────'),
-            { name: '⚠️  全部删除', value: -1 }
+            { name: `⚠️  ${i18n.t('file.delete_all')}`, value: -1 }
         ]
     }]);
 
@@ -816,7 +816,7 @@ async function settingsMenu() {
         const { setting } = await inquirer.prompt([{
             type: 'list',
             name: 'setting',
-            message: '设置:',
+            message: i18n.t('settings.title') + ':',
             choices: [
                 { name: `↩️  ${i18n.t('settings.back')}`, value: 'back' },
                 new inquirer.Separator(`── ${i18n.t('settings.current_config')} ──`),
@@ -894,7 +894,7 @@ async function settingsMenu() {
             const { confirm } = await inquirer.prompt([{
                 type: 'confirm',
                 name: 'confirm',
-                message: '确认切换?',
+                message: i18n.t('confirm.switch_device'),
                 default: true
             }]);
 
@@ -1037,7 +1037,7 @@ async function mainMenu() {
                 const { afterListAction } = await inquirer.prompt([{
                     type: 'list',
                     name: 'afterListAction',
-                    message: '文件列表操作:',
+                    message: i18n.t('file.file_list_operations'),
                     choices: [
                         { name: `⬅️  ${i18n.t('menu.back')}`, value: 'back' },
                         { name: `📥 ${i18n.t('menu.export_files')}`, value: 'import_from_list' },
@@ -1109,7 +1109,7 @@ async function mainMenu() {
                     const { confirm } = await inquirer.prompt([{
                         type: 'confirm',
                         name: 'confirm',
-                        message: '确认删除? (不可恢复)',
+                        message: i18n.t('confirm.delete_files'),
                         default: false
                     }]);
 
@@ -1150,7 +1150,7 @@ async function mainMenu() {
                 const { selectedPreset } = await inquirer.prompt([{
                     type: 'list',
                     name: 'selectedPreset',
-                    message: '选择设备配置:',
+                    message: i18n.t('settings.select_device_config'),
                     choices: [
                         ...deviceChoices,
                         new inquirer.Separator(),

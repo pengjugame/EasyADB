@@ -5,11 +5,10 @@
     "author": "一只大菜狗"
   },
   "device": {
-    "name": "Meta Quest 3 Screenshots",
-    "remotePath": "/sdcard/oculus/Screenshots",
+    "name": "Android Download",
+    "remotePath": "/sdcard/Download",
     "fileExtensions": [
-      ".jpg",
-      ".png"
+      "*"
     ]
   },
   "import": {
@@ -22,7 +21,7 @@
     "extractAppNameFromFilename": true,
     "appNameSegments": 2
   },
-  "language": "en",
+  "language": "zh",
   "presets": {
     "MetaQuest3_Videos": {
       "name": "Meta Quest 3 Videos",

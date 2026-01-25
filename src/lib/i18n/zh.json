@@ -195,9 +195,19 @@
     "select_date": "选择日期:",
     "select_source": "选择来源:",
     "keep_days": "保留最近{days}天的文件？",
+    "keep_days_question": "保留最近几天的文件?",
+    "keep_today": "保留今天",
+    "keep_last_3_days": "保留最近3天",
+    "keep_last_7_days": "保留最近7天",
+    "keep_last_14_days": "保留最近14天",
+    "keep_last_30_days": "保留最近30天",
+    "keep_last_60_days": "保留最近60天",
+    "keep_last_90_days": "保留最近90天",
+    "delete_all": "全部删除",
     "no_files_match": "没有符合筛选条件的文件",
     "operation_guide": "操作: 空格=选择  A=全选  回车=确认  (不选直接回车=返回)",
-    "filter_results": "筛选结果"
+    "filter_results": "筛选结果",
+    "file_list_operations": "文件列表操作:"
   },
   "settings": {
     "current_config": "当前配置",
@@ -217,6 +227,7 @@
     "remote_path": "远程路径",
     "file_extensions": "文件扩展名 (逗号分隔, * 表示全部)",
     "enter_settings": "是否进入设置修改路径?",
+    "select_device_config": "选择设备配置:",
     "cancel": "取消"
   },
   "info": {
