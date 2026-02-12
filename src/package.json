@@ -27,7 +27,7 @@
   },
   "pkg": {
     "assets": [
-      "AdbFileManager/**/*"
+      "lib/**/*"
     ],
     "outputPath": "../exe"
   },
