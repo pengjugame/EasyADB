@@ -33,16 +33,33 @@ function getAppDir() {
 
 // 获取配置文件路径（支持打包后的exe）
 function getConfigPath() {
-    // 开发时直接使用src/lib/config/config.json
-    const configPath = path.join(__dirname, 'lib', 'config', 'config.json');
+    // 检测是否在 pkg 打包环境中
+    const isPkg = typeof process.pkg !== 'undefined';
 
-    // 确保config目录存在
-    const configDir = path.dirname(configPath);
-    if (!fs.existsSync(configDir)) {
-        fs.mkdirSync(configDir, { recursive: true });
+    if (isPkg) {
+        // 打包后：使用 exe 所在目录的 lib/config/config.json
+        const exeDir = path.dirname(process.execPath);
+        const configPath = path.join(exeDir, 'lib', 'config', 'config.json');
+
+        // 确保 config 目录存在（exe 目录是可写的）
+        const configDir = path.dirname(configPath);
+        if (!fs.existsSync(configDir)) {
+            fs.mkdirSync(configDir, { recursive: true });
+        }
+
+        return configPath;
+    } else {
+        // 开发时：使用 src/lib/config/config.json
+        const configPath = path.join(__dirname, 'lib', 'config', 'config.json');
+
+        // 确保 config 目录存在
+        const configDir = path.dirname(configPath);
+        if (!fs.existsSync(configDir)) {
+            fs.mkdirSync(configDir, { recursive: true });
+        }
+
+        return configPath;
     }
-
-    return configPath;
 }
 
 // 加载配置

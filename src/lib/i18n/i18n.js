@@ -6,8 +6,13 @@
 const fs = require('fs');
 const path = require('path');
 
+// 检测是否在 pkg 打包环境中
+const isPkg = typeof process.pkg !== 'undefined';
+
 // 语言文件目录
-const LANG_DIR = path.join(__dirname);
+const LANG_DIR = isPkg
+  ? path.join(path.dirname(process.execPath), 'lib', 'i18n')
+  : path.join(__dirname);
 
 // 支持的语言列表
 const SUPPORTED_LANGUAGES = {
