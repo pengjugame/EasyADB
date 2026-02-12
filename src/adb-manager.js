@@ -829,7 +829,6 @@ async function confirmAndSaveConfig(config, message = i18n.t('confirm.save_setti
 }
 
 async function settingsMenu() {
-    const presetKeys = Object.keys(CONFIG.presets);
     const configPath = getConfigPath();
 
     while (true) {
@@ -842,24 +841,16 @@ async function settingsMenu() {
             name: 'setting',
             message: i18n.t('settings.title') + ':',
             choices: [
-                { name: `↩️  ${i18n.t('settings.back')}`, value: 'back' },
+                { name: i18n.t('settings.back'), value: 'back' },
                 new inquirer.Separator(`── ${i18n.t('settings.current_config')} ──`),
-                { name: `🌐 ${i18n.t('settings.language')}: ${i18n.getCurrentLanguage().toUpperCase()}`, value: 'language' },
-                { name: `📱 ${i18n.t('settings.device_name')}: ${CONFIG.device.name}`, value: 'device' },
-                { name: `📂 ${i18n.t('settings.remote_path')}: ${CONFIG.device.remotePath}`, value: 'path' },
-                { name: `📄 ${i18n.t('settings.file_extensions').split(' (')[0]}: ${CONFIG.device.fileExtensions.join(', ')}`, value: 'extensions' },
-                new inquirer.Separator(`── ${i18n.t('settings.quick_switch')} ──`),
-                ...presetKeys.map(key => ({
-                    name: `🔹 ${CONFIG.presets[key].name}`,
-                    value: `preset_${key}`
-                })),
+                { name: `${i18n.t('settings.language')}: ${i18n.getCurrentLanguage().toUpperCase()}`, value: 'language' },
                 new inquirer.Separator(`── ${i18n.t('settings.others')} ──`),
-                { name: `🔄 ${i18n.t('settings.restore_default')}`, value: 'restore' }
+                { name: i18n.t('settings.restore_default'), value: 'restore' }
             ]
         }]);
 
         if (setting === 'back') {
-            return; // 返回但不重启
+            return;
         }
 
         if (setting === 'language') {
@@ -879,7 +870,7 @@ async function settingsMenu() {
             if (i18n.switchLanguage(selectedLanguage)) {
                 console.log(chalk.green(`✓ ${i18n.t('language.language_changed', { lang: supportedLanguages[selectedLanguage] })}`));
                 console.log(chalk.yellow(i18n.t('language.restart_required')));
-                return mainMenu(); // 重新加载主菜单以应用新语言
+                return selectDeviceMenu();
             } else {
                 console.log(chalk.red(`✗ ${i18n.t('settings.switch_failed')}`));
             }
@@ -906,88 +897,16 @@ async function settingsMenu() {
             }
             continue;
         }
-
-        if (setting.startsWith('preset_')) {
-            const presetKey = setting.replace('preset_', '');
-            const preset = CONFIG.presets[presetKey];
-
-            console.log(chalk.cyan(`\n${i18n.t('settings.confirm_switch')}: ${preset.name}`));
-            console.log(chalk.gray(`  ${i18n.t('settings.remote_path')}: ${preset.remotePath}`));
-            console.log(chalk.gray(`  ${i18n.t('settings.file_extensions').split(' (')[0]}: ${preset.fileExtensions.join(', ')}`));
-
-            const { confirm } = await inquirer.prompt([{
-                type: 'confirm',
-                name: 'confirm',
-                message: i18n.t('confirm.switch_device'),
-                default: true
-            }]);
-
-            if (confirm) {
-                CONFIG.device.name = preset.name;
-                CONFIG.device.remotePath = preset.remotePath;
-                CONFIG.device.fileExtensions = preset.fileExtensions;
-                saveConfig(CONFIG);
-                console.log(chalk.green(`✓ ${i18n.t('settings.switch_success', { name: preset.name })}`));
-            }
-            continue;
-        }
-
-        if (setting === 'device') {
-            const { newName } = await inquirer.prompt([{
-                type: 'input',
-                name: 'newName',
-                message: i18n.t('settings.device_name') + ':',
-                default: CONFIG.device.name
-            }]);
-
-            if (newName !== CONFIG.device.name) {
-                CONFIG.device.name = newName;
-                await confirmAndSaveConfig(CONFIG);
-            }
-            continue;
-        }
-
-        if (setting === 'path') {
-            const { newPath } = await inquirer.prompt([{
-                type: 'input',
-                name: 'newPath',
-                message: i18n.t('settings.remote_path') + ':',
-                default: CONFIG.device.remotePath
-            }]);
-
-            if (newPath !== CONFIG.device.remotePath) {
-                CONFIG.device.remotePath = newPath;
-                await confirmAndSaveConfig(CONFIG);
-            }
-            continue;
-        }
-
-        if (setting === 'extensions') {
-            const { newExt } = await inquirer.prompt([{
-                type: 'input',
-                name: 'newExt',
-                message: i18n.t('settings.file_extensions') + ':',
-                default: CONFIG.device.fileExtensions.join(', ')
-            }]);
-
-            const newExtArray = newExt.split(',').map(e => e.trim());
-            if (JSON.stringify(newExtArray) !== JSON.stringify(CONFIG.device.fileExtensions)) {
-                CONFIG.device.fileExtensions = newExtArray;
-                await confirmAndSaveConfig(CONFIG);
-            }
-            continue;
-        }
     }
 }
 
-// ========== 主菜单 ==========
+// ========== 设备选择菜单 ==========
 
-async function mainMenu() {
-    // 显示标题
+async function selectDeviceMenu() {
+    // Display ASCII banner
     const title = CONFIG.app.name;
     const version = CONFIG.app.version;
     const author = CONFIG.app.author;
-    const configPath = getConfigPath();
 
     console.log('');
     console.log('  ____   __    __   _     __    ___   ___ ');
@@ -997,10 +916,116 @@ async function mainMenu() {
     console.log(chalk.white(`  ${title}`));
     console.log(chalk.gray(`  v${version}  by ${author}`));
     console.log(chalk.gray('  ─────────────────────────────────────────'));
-    console.log(chalk.yellow(`  📱 ${CONFIG.device.name}`));
-    console.log(chalk.gray(`  📂 ${CONFIG.device.remotePath}`));
-    console.log(chalk.gray(`  📄 ${CONFIG.device.fileExtensions.join(', ')}`));
-    console.log(chalk.gray(`  ⚙️  ${configPath}`));
+    console.log('');
+
+    // Build device choices
+    const presetOrder = ['MetaQuest3_Videos', 'MetaQuest3_Screenshots', 'Android_DCIM', 'Android_Download'];
+    const choices = [];
+    const lastUsed = CONFIG.lastUsedDevice;
+
+    // Add last used device first if it exists and is valid
+    if (lastUsed && CONFIG.presets[lastUsed]) {
+        const preset = CONFIG.presets[lastUsed];
+        choices.push({
+            name: `${preset.name} (${preset.remotePath})`,
+            value: lastUsed
+        });
+    }
+
+    // Add remaining presets in order
+    for (const key of presetOrder) {
+        if (key !== lastUsed && CONFIG.presets[key]) {
+            const preset = CONFIG.presets[key];
+            choices.push({
+                name: `${preset.name} (${preset.remotePath})`,
+                value: key
+            });
+        }
+    }
+
+    // Add custom option
+    choices.push({
+        name: i18n.t('preset.custom'),
+        value: 'custom'
+    });
+
+    const { selectedDevice } = await inquirer.prompt([{
+        type: 'list',
+        name: 'selectedDevice',
+        message: i18n.t('device.select_device'),
+        choices: choices,
+        default: 0
+    }]);
+
+    if (selectedDevice === 'custom') {
+        await customDeviceConfig();
+    } else {
+        // Load preset into CONFIG.device
+        const preset = CONFIG.presets[selectedDevice];
+        CONFIG.device.name = preset.name;
+        CONFIG.device.remotePath = preset.remotePath;
+        CONFIG.device.fileExtensions = preset.fileExtensions;
+        CONFIG.lastUsedDevice = selectedDevice;
+        saveConfig(CONFIG);
+    }
+
+    // Enter main menu
+    await mainMenu();
+}
+
+async function customDeviceConfig() {
+    console.log(chalk.cyan(`\n${i18n.t('device.custom_device')}`));
+
+    const { deviceName } = await inquirer.prompt([{
+        type: 'input',
+        name: 'deviceName',
+        message: i18n.t('device.enter_device_name'),
+        default: CONFIG.device.name
+    }]);
+
+    const { remotePath } = await inquirer.prompt([{
+        type: 'input',
+        name: 'remotePath',
+        message: i18n.t('device.enter_remote_path'),
+        default: CONFIG.device.remotePath
+    }]);
+
+    const { extensions } = await inquirer.prompt([{
+        type: 'input',
+        name: 'extensions',
+        message: i18n.t('device.enter_file_extensions'),
+        default: CONFIG.device.fileExtensions.join(', ')
+    }]);
+
+    // Parse extensions
+    const fileExtensions = extensions.split(',').map(ext => ext.trim()).filter(ext => ext.length > 0);
+
+    // Save to CONFIG.device
+    CONFIG.device.name = deviceName;
+    CONFIG.device.remotePath = remotePath;
+    CONFIG.device.fileExtensions = fileExtensions;
+    CONFIG.lastUsedDevice = null; // Custom config doesn't have a preset key
+    saveConfig(CONFIG);
+
+    console.log(chalk.green(`\n✓ ${i18n.t('settings.save_success')}`));
+}
+
+// ========== 主菜单 ==========
+
+async function mainMenu() {
+    // Display title banner
+    const title = CONFIG.app.name;
+    const version = CONFIG.app.version;
+    const author = CONFIG.app.author;
+
+    console.log('');
+    console.log('  ____   __    __   _     __    ___   ___ ');
+    console.log(' | |_   / /\\  ( (` \\ \\_/ / /\\  | | \\ | |_)');
+    console.log(' |_|__ /_/--\\ _)_)  |_| /_/--\\ |_|_/ |_|_)');
+    console.log('');
+    console.log(chalk.white(`  ${title}`));
+    console.log(chalk.gray(`  v${version}  by ${author}`));
+    console.log(chalk.gray('  ─────────────────────────────────────────'));
     console.log('');
 
     if (!checkAdbConnection()) {
@@ -1029,7 +1054,7 @@ async function mainMenu() {
 
         if (goSettings) {
             await settingsMenu();
-            return mainMenu(); // 设置后重新加载文件
+            return mainMenu();
         }
         return;
     }
@@ -1042,14 +1067,13 @@ async function mainMenu() {
             name: 'action',
             message: i18n.t('menu.main_title'),
             choices: [
-                { name: `📋 ${i18n.t('menu.scan_device')}`, value: 'list' },
-                { name: `📥 ${i18n.t('menu.export_files')}`, value: 'import' },
-                { name: `🗑️  ${i18n.t('menu.delete_files')}`, value: 'delete' },
-                { name: `🧹 ${i18n.t('menu.cleanup_old')}`, value: 'cleanup' },
-                { name: '🔄 切换设备配置', value: 'switch_device' },
-                { name: `⚙️  ${i18n.t('menu.settings')}`, value: 'settings' },
-                { name: '🔄 刷新', value: 'refresh' },
-                { name: '❌ 退出', value: 'exit' }
+                { name: i18n.t('menu.scan_device'), value: 'list' },
+                { name: i18n.t('menu.export_files'), value: 'import' },
+                { name: i18n.t('menu.delete_files'), value: 'delete' },
+                { name: i18n.t('menu.cleanup_old'), value: 'cleanup' },
+                { name: i18n.t('menu.settings'), value: 'settings' },
+                { name: i18n.t('menu.refresh'), value: 'refresh' },
+                { name: i18n.t('menu.exit'), value: 'exit' }
             ],
             pageSize: 10
         }]);
@@ -1057,16 +1081,16 @@ async function mainMenu() {
         switch (action) {
             case 'list':
                 displayFileTable(files);
-                // 文件列表查看后的操作菜单
+                // File list operations menu
                 const { afterListAction } = await inquirer.prompt([{
                     type: 'list',
                     name: 'afterListAction',
                     message: i18n.t('file.file_list_operations'),
                     choices: [
-                        { name: `⬅️  ${i18n.t('menu.back')}`, value: 'back' },
-                        { name: `📥 ${i18n.t('menu.export_files')}`, value: 'import_from_list' },
-                        { name: `🗑️  ${i18n.t('menu.delete_files')}`, value: 'delete_from_list' },
-                        { name: '🔄 刷新列表', value: 'refresh' }
+                        { name: i18n.t('menu.back'), value: 'back' },
+                        { name: i18n.t('menu.export_files'), value: 'import_from_list' },
+                        { name: i18n.t('menu.delete_files'), value: 'delete_from_list' },
+                        { name: i18n.t('menu.refresh'), value: 'refresh' }
                     ]
                 }]);
 
@@ -1153,71 +1177,13 @@ async function mainMenu() {
 
             case 'settings':
                 await settingsMenu();
-                // 设置后重新加载文件列表（因为路径可能变了）
-                console.log(chalk.cyan('\n重新加载文件列表...'));
+                // Reload file list after settings (path may have changed)
+                console.log(chalk.cyan(`\n${i18n.t('settings.refreshing_list')}`));
                 files = getFileList();
                 if (files.length === 0) {
-                    console.log(chalk.yellow('设备上没有找到文件'));
+                    console.log(chalk.yellow(i18n.t('device.no_files')));
                 } else {
-                    console.log(chalk.cyan(`发现 ${files.length} 个文件`));
-                }
-                break;
-
-            case 'switch_device':
-                // 切换设备配置 - 显示预设选择菜单
-                const presetKeys = Object.keys(CONFIG.presets);
-                const deviceChoices = presetKeys.map(key => ({
-                    name: `🔹 ${CONFIG.presets[key].name} (${CONFIG.presets[key].remotePath})`,
-                    value: key
-                }));
-
-                const { selectedPreset } = await inquirer.prompt([{
-                    type: 'list',
-                    name: 'selectedPreset',
-                    message: i18n.t('settings.select_device_config'),
-                    choices: [
-                        ...deviceChoices,
-                        new inquirer.Separator(),
-                        { name: '⚙️ 进入详细设置', value: 'advanced' },
-                        { name: `⬅️  ${i18n.t('menu.cancel')}`, value: 'cancel' }
-                    ]
-                }]);
-
-                if (selectedPreset === 'cancel') {
-                    break; // 返回主菜单
-                } else if (selectedPreset === 'advanced') {
-                    await settingsMenu();
-                    return mainMenu(); // 设置后重新加载主菜单
-                } else {
-                    // 切换到选择的预设
-                    const preset = CONFIG.presets[selectedPreset];
-                    console.log(chalk.cyan(`\n将切换到: ${preset.name}`));
-                    console.log(chalk.gray(`  路径: ${preset.remotePath}`));
-                    console.log(chalk.gray(`  类型: ${preset.fileExtensions.join(', ')}`));
-
-                    const { confirm } = await inquirer.prompt([{
-                        type: 'confirm',
-                        name: 'confirm',
-                        message: i18n.t('confirm.switch_device'),
-                        default: true
-                    }]);
-
-                    if (confirm) {
-                        CONFIG.device.name = preset.name;
-                        CONFIG.device.remotePath = preset.remotePath;
-                        CONFIG.device.fileExtensions = preset.fileExtensions;
-                        saveConfig(CONFIG);
-                        console.log(chalk.green(`✓ ${i18n.t('settings.switch_success', { name: preset.name })}`));
-
-                        // 重新加载文件列表
-                        console.log(chalk.cyan(`\n${i18n.t('settings.refreshing_list')}`));
-                        files = getFileList();
-                        if (files.length === 0) {
-                            console.log(chalk.yellow(i18n.t('device.no_files')));
-                        } else {
-                            console.log(chalk.cyan(i18n.t('device.files_found', { count: files.length })));
-                        }
-                    }
+                    console.log(chalk.cyan(i18n.t('device.files_found', { count: files.length })));
                 }
                 break;
 
@@ -1225,7 +1191,7 @@ async function mainMenu() {
                 return mainMenu();
 
             case 'exit':
-                console.log(chalk.green(`\n再见! 👋  -- ${author}\n`));
+                console.log(chalk.green(`\n${i18n.t('menu.goodbye')} 👋  -- ${author}\n`));
                 process.exit(0);
         }
     }
@@ -1237,7 +1203,7 @@ async function mainMenu() {
 const configPath = getConfigPath();
 i18n.init(configPath);
 
-mainMenu().catch(err => {
+selectDeviceMenu().catch(err => {
     console.error(chalk.red(i18n.t('error.generic')), err.message);
     process.exit(1);
 });

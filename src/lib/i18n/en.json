@@ -6,15 +6,17 @@
   },
   "menu": {
     "main_title": "EasyADB - Main Menu",
-    "scan_device": "🔍 Scan Device Files",
-    "export_files": "📤 Export Files",
-    "delete_files": "🗑️  Delete Files",
-    "cleanup_old": "🧹 Cleanup Old Files",
-    "settings": "⚙️  Settings",
-    "exit": "🚪 Exit",
-    "back": "⬅️  Back",
-    "confirm": "✅ Confirm",
-    "cancel": "❌ Cancel"
+    "scan_device": "Scan Device Files",
+    "export_files": "Export Files",
+    "delete_files": "Delete Files",
+    "cleanup_old": "Cleanup Old Files",
+    "settings": "Settings",
+    "exit": "Exit",
+    "back": "Back",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "refresh": "Refresh",
+    "goodbye": "Goodbye"
   },
   "device": {
     "connecting": "Connecting to device...",
@@ -24,7 +26,14 @@
     "scanning": "Scanning device files...",
     "scan_complete": "Scan completed",
     "no_files": "No files found",
-    "file_count": "Found {count} files"
+    "file_count": "Found {count} files",
+    "files_found": "Found {count} files",
+    "check_path": "Check path",
+    "select_device": "Select Device Configuration",
+    "custom_device": "Custom Configuration",
+    "enter_device_name": "Enter device name",
+    "enter_remote_path": "Enter remote path",
+    "enter_file_extensions": "Enter file extensions (comma separated, * for all)"
   },
   "file": {
     "name": "File Name",
@@ -67,7 +76,7 @@
   "preset": {
     "quest_videos": "Meta Quest Videos",
     "quest_screenshots": "Meta Quest Screenshots",
-    "android_camera": "Android Camera",
+    "android_dcim": "Android DCIM",
     "android_download": "Android Download",
     "custom": "Custom Configuration"
   },

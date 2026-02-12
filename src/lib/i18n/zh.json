@@ -6,15 +6,17 @@
   },
   "menu": {
     "main_title": "EasyADB - 主菜单",
-    "scan_device": "🔍 扫描设备文件",
-    "export_files": "📤 导出文件",
-    "delete_files": "🗑️  删除文件",
-    "cleanup_old": "🧹 清理旧文件",
-    "settings": "⚙️  设置",
-    "exit": "🚪 退出",
-    "back": "⬅️  返回",
-    "confirm": "✅ 确认",
-    "cancel": "❌ 取消"
+    "scan_device": "扫描设备文件",
+    "export_files": "导出文件",
+    "delete_files": "删除文件",
+    "cleanup_old": "清理旧文件",
+    "settings": "设置",
+    "exit": "退出",
+    "back": "返回",
+    "confirm": "确认",
+    "cancel": "取消",
+    "refresh": "刷新",
+    "goodbye": "再见"
   },
   "device": {
     "connecting": "正在连接设备...",
@@ -24,7 +26,14 @@
     "scanning": "正在扫描设备文件...",
     "scan_complete": "扫描完成",
     "no_files": "未找到文件",
-    "file_count": "找到 {count} 个文件"
+    "file_count": "找到 {count} 个文件",
+    "files_found": "找到 {count} 个文件",
+    "check_path": "检查路径",
+    "select_device": "选择设备配置",
+    "custom_device": "自定义配置",
+    "enter_device_name": "输入设备名称",
+    "enter_remote_path": "输入远程路径",
+    "enter_file_extensions": "输入文件扩展名 (逗号分隔, * 表示全部)"
   },
   "file": {
     "name": "文件名",
@@ -67,7 +76,7 @@
   "preset": {
     "quest_videos": "Meta Quest 录屏",
     "quest_screenshots": "Meta Quest 截图",
-    "android_camera": "安卓相册",
+    "android_dcim": "安卓相册",
     "android_download": "安卓下载",
     "custom": "自定义配置"
   },
@@ -125,18 +134,6 @@
     "save_settings": "确认保存设置?",
     "switch_device": "确认切换设备配置?",
     "import_files": "确认导入 {count} 个文件?"
-  },
-  "device": {
-    "connecting": "正在连接设备...",
-    "connected": "设备连接成功",
-    "disconnected": "设备已断开",
-    "no_device": "未连接设备",
-    "scanning": "正在扫描设备文件...",
-    "scan_complete": "扫描完成",
-    "no_files": "未找到文件",
-    "file_count": "找到 {count} 个文件",
-    "files_found": "找到 {count} 个文件",
-    "check_path": "检查路径"
   },
   "adb": {
     "not_found": "未找到ADB。请安装Android SDK。",

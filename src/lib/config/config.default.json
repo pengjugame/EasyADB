@@ -19,6 +19,7 @@
     "extractAppNameFromFilename": true,
     "appNameSegments": 2
   },
+  "lastUsedDevice": null,
   "presets": {
     "MetaQuest3_Videos": {
       "name": "Meta Quest 3 Videos",
