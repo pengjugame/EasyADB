@@ -32,7 +32,7 @@ echo.
 echo [3/3] 打包为可执行文件...
 echo.
 echo 正在打包 EasyADB 管理工具...
-call npx pkg adb-manager.js -t node18-win-x64 -o ..\exe\easyadb.exe
+call npx pkg adb-manager.js -t node18-win-x64 -o ..\exe\EasyAdb.exe
 if errorlevel 1 (
     echo [错误] 打包失败！
     pause
@@ -53,13 +53,13 @@ echo   打包完成！
 echo ========================================
 echo.
 echo 输出文件：
-echo   exe\easyadb.exe
+echo   exe\EasyAdb.exe
 echo   exe\lib\config\
 echo   exe\lib\i18n\
 echo.
 echo 使用说明：
-echo   1. 双击 easyadb.exe 运行
-echo   2. 确保设备已连接并启用 USB 调试
-echo   3. 配置文件位于 lib\config\config.json
+echo   - 双击 EasyAdb.exe 运行
+echo   - 确保设备已连接并启用 USB 调试
+echo   - 配置文件位于 lib\config\config.json
 echo.
 pause

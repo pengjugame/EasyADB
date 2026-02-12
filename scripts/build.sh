@@ -34,8 +34,8 @@ echo ""
 # 检测操作系统
 OS="$(uname -s)"
 case "${OS}" in
-    Linux*)     TARGET="node18-linux-x64"; OUTPUT="easyadb-linux";;
-    Darwin*)    TARGET="node18-macos-x64"; OUTPUT="easyadb-macos";;
+    Linux*)     TARGET="node18-linux-x64"; OUTPUT="EasyAdb-linux";;
+    Darwin*)    TARGET="node18-macos-x64"; OUTPUT="EasyAdb-macos";;
     *)          echo "[错误] 不支持的操作系统: ${OS}"; exit 1;;
 esac
 

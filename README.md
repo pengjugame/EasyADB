@@ -156,13 +156,13 @@ scripts/build.sh
 npm install -g pkg
 
 # Build for Windows
-pkg src/adb-manager.js -t node18-win-x64 -o exe/easyadb.exe
+pkg src/adb-manager.js -t node18-win-x64 -o exe/EasyAdb.exe
 
 # Build for macOS
-pkg src/adb-manager.js -t node18-macos-x64 -o exe/easyadb-macos
+pkg src/adb-manager.js -t node18-macos-x64 -o exe/EasyAdb-macos
 
 # Build for Linux
-pkg src/adb-manager.js -t node18-linux-x64 -o exe/easyadb-linux
+pkg src/adb-manager.js -t node18-linux-x64 -o exe/EasyAdb-linux
 ```
 
 See [exe/README.md](exe/README.md) and [scripts/README.md](scripts/README.md) for detailed instructions.

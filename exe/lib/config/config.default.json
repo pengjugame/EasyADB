@@ -1,0 +1,45 @@
+{
+  "app": {
+    "name": "EasyADB",
+    "version": "1.0.0",
+    "author": "一只大菜狗"
+  },
+  "device": {
+    "name": "Meta Quest 3",
+    "remotePath": "/sdcard/oculus/VideoShots",
+    "fileExtensions": [".mp4", ".MP4"]
+  },
+  "import": {
+    "localFolder": "Videos",
+    "folderNameFormat": "YYYY-MM-DD",
+    "useSubfolderByDate": true
+  },
+  "display": {
+    "dateFormat": "YYYY-MM-DD HH:mm",
+    "extractAppNameFromFilename": true,
+    "appNameSegments": 2
+  },
+  "lastUsedDevice": null,
+  "presets": {
+    "MetaQuest3_Videos": {
+      "name": "Meta Quest 3 Videos",
+      "remotePath": "/sdcard/oculus/VideoShots",
+      "fileExtensions": [".mp4"]
+    },
+    "MetaQuest3_Screenshots": {
+      "name": "Meta Quest 3 Screenshots",
+      "remotePath": "/sdcard/oculus/Screenshots",
+      "fileExtensions": [".jpg", ".png"]
+    },
+    "Android_DCIM": {
+      "name": "Android Camera",
+      "remotePath": "/sdcard/DCIM/Camera",
+      "fileExtensions": [".jpg", ".png", ".mp4"]
+    },
+    "Android_Download": {
+      "name": "Android Download",
+      "remotePath": "/sdcard/Download",
+      "fileExtensions": ["*"]
+    }
+  }
+}
