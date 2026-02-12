@@ -207,7 +207,10 @@
     "no_files_match": "No files match the filter criteria",
     "operation_guide": "Operation: Space=select  A=select all  Enter=confirm  (press Enter without selection to return)",
     "filter_results": "Filter Results",
-    "file_list_operations": "File list operations:"
+    "file_list_operations": "File list operations:",
+    "cutoff_date": "Cutoff Date",
+    "total_files": "Total Files",
+    "files_to_delete": "Files to Delete"
   },
   "settings": {
     "current_config": "Current Configuration",

@@ -5,10 +5,10 @@
     "author": "一只大菜狗"
   },
   "device": {
-    "name": "Android Download",
-    "remotePath": "/sdcard/Download",
+    "name": "Meta Quest 3 Videos",
+    "remotePath": "/sdcard/oculus/VideoShots",
     "fileExtensions": [
-      "*"
+      ".mp4"
     ]
   },
   "import": {

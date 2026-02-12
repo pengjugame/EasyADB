@@ -207,7 +207,10 @@
     "no_files_match": "没有符合筛选条件的文件",
     "operation_guide": "操作: 空格=选择  A=全选  回车=确认  (不选直接回车=返回)",
     "filter_results": "筛选结果",
-    "file_list_operations": "文件列表操作:"
+    "file_list_operations": "文件列表操作:",
+    "cutoff_date": "截止日期",
+    "total_files": "总文件数",
+    "files_to_delete": "待删除文件数"
   },
   "settings": {
     "current_config": "当前配置",

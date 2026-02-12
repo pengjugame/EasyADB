@@ -402,7 +402,8 @@ function getFileList() {
                 const size = parseInt(match[1]);
                 const dateStr = `${match[2]} ${match[3]}`;
                 const fullPath = `${currentDir}/${fileName}`;
-                const date = new Date(dateStr);
+                // 使用 dayjs 解析日期，然后转换为 Date 对象，确保解析正确
+                const date = dayjs(dateStr, 'YYYY-MM-DD HH:mm').toDate();
 
                 files.push(new RemoteFile(fullPath, size, date, CONFIG));
             }
@@ -568,14 +569,28 @@ async function deleteFiles(files) {
         const file = files[i];
         process.stdout.write(chalk.yellow(`[${i + 1}/${files.length}] ${file.fileName}... `));
 
-        adbShell(`rm "${file.fullPath}"`, true);
+        try {
+            // 执行删除命令
+            const deleteResult = adbShell(`rm "${file.fullPath}"`, true);
 
-        const checkResult = adbShell(`ls "${file.fullPath}" 2>/dev/null`, true);
-        if (!checkResult || checkResult.includes('No such file')) {
-            console.log(chalk.green('✓'));
-            success++;
-        } else {
-            console.log(chalk.red('✗'));
+            // 如果命令执行失败（返回null），直接标记为失败
+            if (deleteResult === null) {
+                console.log(chalk.red('✗ (command failed)'));
+                failed++;
+                continue;
+            }
+
+            // 验证文件是否已删除
+            const checkResult = adbShell(`ls "${file.fullPath}" 2>/dev/null`, true);
+            if (!checkResult || checkResult.includes('No such file')) {
+                console.log(chalk.green('✓'));
+                success++;
+            } else {
+                console.log(chalk.red('✗ (still exists)'));
+                failed++;
+            }
+        } catch (error) {
+            console.log(chalk.red(`✗ (${error.message})`));
             failed++;
         }
     }
@@ -755,7 +770,16 @@ async function cleanupDevice(files) {
         toDelete = files;
     } else {
         const cutoffDate = dayjs().subtract(keepDays, 'day').startOf('day');
-        toDelete = files.filter(f => dayjs(f.date).isBefore(cutoffDate));
+        console.log(chalk.gray(`\n📅 ${i18n.t('file.cutoff_date')}: ${cutoffDate.format('YYYY-MM-DD HH:mm:ss')}`));
+        console.log(chalk.gray(`📊 ${i18n.t('file.total_files')}: ${files.length}`));
+
+        toDelete = files.filter(f => {
+            const fileDate = dayjs(f.date);
+            const shouldDelete = fileDate.isBefore(cutoffDate);
+            return shouldDelete;
+        });
+
+        console.log(chalk.gray(`🗑️  ${i18n.t('file.files_to_delete')}: ${toDelete.length}`));
     }
 
     if (toDelete.length === 0) {
