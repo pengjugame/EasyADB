@@ -34,33 +34,27 @@ echo ""
 # 检测操作系统
 OS="$(uname -s)"
 case "${OS}" in
-    Linux*)     TARGET="node18-linux-x64";;
-    Darwin*)    TARGET="node18-macos-x64";;
+    Linux*)     TARGET="node18-linux-x64"; OUTPUT="easyadb-linux";;
+    Darwin*)    TARGET="node18-macos-x64"; OUTPUT="easyadb-macos";;
     *)          echo "[错误] 不支持的操作系统: ${OS}"; exit 1;;
 esac
 
-echo "正在打包 Quest 视频管理工具 (${TARGET})..."
-npx pkg quest-video.js -t ${TARGET} -o ../exe/quest-video
+echo "正在打包 EasyADB 管理工具 (${TARGET})..."
+npx pkg adb-manager.js -t ${TARGET} -o ../exe/${OUTPUT}
 if [ $? -ne 0 ]; then
-    echo "[错误] 打包 quest-video 失败！"
-    exit 1
-fi
-
-echo "正在打包通用 ADB 管理器 (${TARGET})..."
-npx pkg adb-manager.js -t ${TARGET} -o ../exe/adb-manager
-if [ $? -ne 0 ]; then
-    echo "[错误] 打包 adb-manager 失败！"
+    echo "[错误] 打包失败！"
     exit 1
 fi
 
 echo ""
-echo "复制配置文件..."
-mkdir -p ../exe/AdbFileManager/config
-cp -f AdbFileManager/config/*.json ../exe/AdbFileManager/config/
+echo "复制配置文件和资源..."
+mkdir -p ../exe/lib/config
+mkdir -p ../exe/lib/i18n
+cp -f lib/config/*.json ../exe/lib/config/
+cp -f lib/i18n/*.json ../exe/lib/i18n/
 
 # 添加执行权限
-chmod +x ../exe/quest-video
-chmod +x ../exe/adb-manager
+chmod +x ../exe/${OUTPUT}
 
 echo ""
 echo "========================================"
@@ -68,12 +62,12 @@ echo "  打包完成！"
 echo "========================================"
 echo ""
 echo "输出文件："
-echo "  exe/quest-video"
-echo "  exe/adb-manager"
-echo "  exe/AdbFileManager/config/"
+echo "  exe/${OUTPUT}"
+echo "  exe/lib/config/"
+echo "  exe/lib/i18n/"
 echo ""
 echo "使用说明："
-echo "  1. 运行 ./quest-video 或 ./adb-manager"
+echo "  1. 运行 ./${OUTPUT}"
 echo "  2. 确保设备已连接并启用 USB 调试"
-echo "  3. 配置文件位于 AdbFileManager/config/config.json"
+echo "  3. 配置文件位于 lib/config/config.json"
 echo ""
