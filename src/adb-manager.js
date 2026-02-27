@@ -370,7 +370,7 @@ function checkAdbConnection() {
         return false;
     }
 
-    console.log(chalk.green(`  ✓ ${i18n.t('adb.connected_devices', { count: connectedDevices.length })}`));
+    console.log(chalk.green(`  [OK] ${i18n.t('adb.connected_devices', { count: connectedDevices.length })}`));
     return true;
 }
 
@@ -552,15 +552,15 @@ async function importFiles(files) {
             });
 
             if (fs.existsSync(localPath) && fs.statSync(localPath).size > 0) {
-                console.log(chalk.green('✓'));
+                console.log(chalk.green('[OK]'));
                 success++;
             } else {
-                console.log(chalk.red('✗'));
+                console.log(chalk.red('[FAIL]'));
                 failed++;
             }
         } catch (error) {
             const errMsg = error.stderr ? error.stderr.toString().trim() : error.message;
-            console.log(chalk.red(`✗ (${errMsg.substring(0, 40)})`));
+            console.log(chalk.red(`[FAIL] (${errMsg.substring(0, 40)})`));
             failed++;
         }
     }
@@ -593,14 +593,14 @@ async function deleteFiles(files) {
             // Verify deletion by checking if file still exists
             const checkResult = adbShell(`ls "${file.fullPath}" 2>/dev/null`, true);
             if (!checkResult || checkResult.trim() === '' || checkResult.includes('No such file')) {
-                console.log(chalk.green('✓'));
+                console.log(chalk.green('[OK]'));
                 success++;
             } else {
-                console.log(chalk.red('✗ (still exists)'));
+                console.log(chalk.red('[FAIL] (still exists)'));
                 failed++;
             }
         } catch (error) {
-            console.log(chalk.red(`✗ (${error.message})`));
+            console.log(chalk.red(`[FAIL] (${error.message})`));
             failed++;
         }
     }
@@ -690,12 +690,16 @@ async function selectFilters(files, action) {
         const selected = dateChoices.find(c => c.value === dateOption);
 
         if (dateOption === 'custom') {
+            const dateCounts = {};
+            files.forEach(f => {
+                dateCounts[f.date] = (dateCounts[f.date] || 0) + 1;
+            });
             console.log(chalk.gray(`  ${i18n.t('file.operation_guide')}`));
             const { selectedDates } = await inquirer.prompt([{
                 type: 'checkbox',
                 name: 'selectedDates',
                 message: i18n.t('file.select_date'),
-                choices: dates.map(d => ({ name: d, value: d })),
+                choices: dates.map(d => ({ name: `${d} (${dateCounts[d] || 0} 个)`, value: d })),
                 pageSize: 15
             }]);
             if (selectedDates.length === 0) return null;
@@ -829,7 +833,7 @@ async function confirmAndSaveConfig(config, message = i18n.t('confirm.save_setti
 
     if (confirm) {
         if (saveConfig(config)) {
-            console.log(chalk.green(`✓ ${i18n.t('settings.save_success')}`));
+            console.log(chalk.green(`[OK] ${i18n.t('settings.save_success')}`));
             return true;
         }
     } else {
@@ -878,11 +882,11 @@ async function settingsMenu() {
             }]);
 
             if (i18n.switchLanguage(selectedLanguage)) {
-                console.log(chalk.green(`✓ ${i18n.t('language.language_changed', { lang: supportedLanguages[selectedLanguage] })}`));
+                console.log(chalk.green(`[OK] ${i18n.t('language.language_changed', { lang: supportedLanguages[selectedLanguage] })}`));
                 console.log(chalk.yellow(i18n.t('language.restart_required')));
                 return selectDeviceMenu();
             } else {
-                console.log(chalk.red(`✗ ${i18n.t('settings.switch_failed')}`));
+                console.log(chalk.red(`[FAIL] ${i18n.t('settings.switch_failed')}`));
             }
             continue;
         }
@@ -900,7 +904,7 @@ async function settingsMenu() {
             if (confirm) {
                 CONFIG = restoreDefaultConfig();
                 if (saveConfig(CONFIG)) {
-                    console.log(chalk.green(`✓ ${i18n.t('settings.restore_success')}`));
+                    console.log(chalk.green(`[OK] ${i18n.t('settings.restore_success')}`));
                 }
             } else {
                 console.log(chalk.yellow(i18n.t('confirm.cancel')));
@@ -1017,7 +1021,7 @@ async function customDeviceConfig() {
     CONFIG.lastUsedDevice = null; // Custom config doesn't have a preset key
     saveConfig(CONFIG);
 
-    console.log(chalk.green(`\n✓ ${i18n.t('settings.save_success')}`));
+    console.log(chalk.green(`\n[OK] ${i18n.t('settings.save_success')}`));
 }
 
 // ========== 主菜单 ==========
