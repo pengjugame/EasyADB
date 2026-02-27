@@ -587,19 +587,12 @@ async function deleteFiles(files) {
         process.stdout.write(chalk.yellow(`[${i + 1}/${files.length}] ${file.fileName}... `));
 
         try {
-            // 执行删除命令
-            const deleteResult = adbShell(`rm "${file.fullPath}"`, true);
+            // Execute delete command - ignore return value, rm outputs nothing on success
+            adbShell(`rm -f "${file.fullPath}"`, true);
 
-            // 如果命令执行失败（返回null），直接标记为失败
-            if (deleteResult === null) {
-                console.log(chalk.red('✗ (command failed)'));
-                failed++;
-                continue;
-            }
-
-            // 验证文件是否已删除
+            // Verify deletion by checking if file still exists
             const checkResult = adbShell(`ls "${file.fullPath}" 2>/dev/null`, true);
-            if (!checkResult || checkResult.includes('No such file')) {
+            if (!checkResult || checkResult.trim() === '' || checkResult.includes('No such file')) {
                 console.log(chalk.green('✓'));
                 success++;
             } else {
