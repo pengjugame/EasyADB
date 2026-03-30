@@ -610,18 +610,31 @@ async function deleteFiles(files) {
 
 // ========== 筛选菜单 ==========
 
-function getDateQuickChoices() {
+function getDateQuickChoices(files) {
     const today = dayjs().format('YYYY-MM-DD');
     const yesterday = dayjs().subtract(1, 'day').format('YYYY-MM-DD');
+
+    // 统计各区间文件数
+    const countInRange = (start, end) =>
+        files.filter(f => { const d = dayjs(f.date); return d.isAfter(start) && d.isBefore(end); }).length;
+    const countByDates = (dates) =>
+        files.filter(f => dates.includes(dayjs(f.date).format('YYYY-MM-DD'))).length;
+
+    const n = {
+        today:    countByDates([today]),
+        yesterday: countByDates([yesterday]),
+        last3:    countInRange(dayjs().subtract(3, 'day'), dayjs().add(1, 'day')),
+        last7:    countInRange(dayjs().subtract(7, 'day'), dayjs().add(1, 'day')),
+    };
 
     return [
         { name: '↩️  返回上级', value: 'back' },
         new inquirer.Separator('────────────'),
-        { name: `今天 (${today})`, value: 'today', dates: [today] },
-        { name: `昨天 (${yesterday})`, value: 'yesterday', dates: [yesterday] },
-        { name: '最近3天', value: 'last3days', dateRange: { start: dayjs().subtract(3, 'day'), end: dayjs().add(1, 'day') } },
-        { name: '最近7天', value: 'last7days', dateRange: { start: dayjs().subtract(7, 'day'), end: dayjs().add(1, 'day') } },
-        { name: '选择具体日期...', value: 'custom' }
+        { name: `${i18n.t('file.date_today')} (${today})  ${i18n.t('file.date_count', { count: n.today })}`, value: 'today', dates: [today] },
+        { name: `${i18n.t('file.date_yesterday')} (${yesterday})  ${i18n.t('file.date_count', { count: n.yesterday })}`, value: 'yesterday', dates: [yesterday] },
+        { name: `${i18n.t('file.date_last3days')}  ${i18n.t('file.date_count', { count: n.last3 })}`, value: 'last3days', dateRange: { start: dayjs().subtract(3, 'day'), end: dayjs().add(1, 'day') } },
+        { name: `${i18n.t('file.date_last7days')}  ${i18n.t('file.date_count', { count: n.last7 })}`, value: 'last7days', dateRange: { start: dayjs().subtract(7, 'day'), end: dayjs().add(1, 'day') } },
+        { name: i18n.t('file.date_custom'), value: 'custom' }
     ];
 }
 
@@ -677,7 +690,7 @@ async function selectFilters(files, action) {
     let filters = {};
 
     if (filterType === 'date' || filterType === 'both') {
-        const dateChoices = getDateQuickChoices();
+        const dateChoices = getDateQuickChoices(files);
         const { dateOption } = await inquirer.prompt([{
             type: 'list',
             name: 'dateOption',
@@ -1024,6 +1037,114 @@ async function customDeviceConfig() {
     console.log(chalk.green(`\n[OK] ${i18n.t('settings.save_success')}`));
 }
 
+// ========== APK 安装 ==========
+
+// 解析 adb install 输出，返回友好错误信息
+function parseInstallError(output) {
+    if (!output) return i18n.t('apk.unknown_error');
+    if (output.includes('INSTALL_FAILED_VERSION_DOWNGRADE')) return i18n.t('apk.version_downgrade');
+    if (output.includes('INSTALL_FAILED_INSUFFICIENT_STORAGE')) return i18n.t('apk.insufficient_storage');
+    if (output.includes('INSTALL_FAILED_INVALID_APK') || output.includes('INSTALL_PARSE_FAILED')) return i18n.t('apk.invalid_apk');
+    if (output.includes('INSTALL_PARSE_FAILED_NO_CERTIFICATES') || output.includes('INSTALL_FAILED_NO_MATCHING_ABIS')) return i18n.t('apk.not_signed');
+    // 提取原始错误码
+    const match = output.match(/INSTALL_FAILED_\w+/);
+    return match ? match[0] : i18n.t('apk.unknown_error');
+}
+
+// 执行安装逻辑（菜单和拖入共用）
+async function doInstallApk(apkPath) {
+    const fileName = path.basename(apkPath);
+    console.log(chalk.cyan(`\n  文件: ${fileName}`));
+    console.log(chalk.gray(`  路径: ${apkPath}`));
+    console.log(chalk.cyan(`\n  ${i18n.t('apk.installing')}`));
+
+    try {
+        // -r 覆盖安装, -t 允许测试包（Quest sideload 常用）
+        const result = execSync(`${ADB_PATH} install -r -t "${apkPath}"`, {
+            encoding: 'utf-8',
+            maxBuffer: 50 * 1024 * 1024,
+            windowsHide: true,
+            timeout: 120000,  // 2 分钟超时，大 APK 需要时间
+            stdio: ['pipe', 'pipe', 'pipe']
+        });
+
+        if (result && result.includes('Success')) {
+            console.log(chalk.green(`\n  ✓ ${i18n.t('apk.success')}`));
+            return true;
+        } else {
+            const errMsg = parseInstallError(result);
+            console.log(chalk.red(`\n  ✗ ${i18n.t('apk.failed')}: ${errMsg}`));
+            return false;
+        }
+    } catch (error) {
+        const errOutput = (error.stdout || '') + (error.stderr || '') + (error.message || '');
+        const errMsg = parseInstallError(errOutput);
+        console.log(chalk.red(`\n  ✗ ${i18n.t('apk.failed')}: ${errMsg}`));
+        return false;
+    }
+}
+
+// 菜单入口：提示用户输入/拖入路径
+async function installApk() {
+    const { apkPath } = await inquirer.prompt([{
+        type: 'input',
+        name: 'apkPath',
+        message: i18n.t('apk.input_prompt'),
+        validate(input) {
+            const cleaned = input.trim().replace(/^["']|["']$/g, '');
+            if (!cleaned) return '路径不能为空';
+            if (!cleaned.toLowerCase().endsWith('.apk')) return i18n.t('apk.not_apk');
+            if (!fs.existsSync(cleaned)) return i18n.t('apk.file_not_found');
+            return true;
+        }
+    }]);
+
+    const cleanPath = apkPath.trim().replace(/^["']|["']$/g, '');
+    await doInstallApk(cleanPath);
+}
+
+// 拖入 exe 启动模式：直接安装，结束后等待按键
+async function installApkDirect(apkPath) {
+    const cleanPath = apkPath.trim().replace(/^["']|["']$/g, '');
+
+    console.log('');
+    console.log(chalk.cyan(`  ${i18n.t('apk.drag_mode_title')}`));
+    console.log(chalk.gray('  ─────────────────────────────────────────'));
+    console.log(chalk.white(`  ${i18n.t('apk.drag_mode_file')}`));
+
+    // 检查文件存在
+    if (!fs.existsSync(cleanPath)) {
+        console.log(chalk.red(`\n  ✗ ${i18n.t('apk.file_not_found')}: ${cleanPath}`));
+        await waitEnter();
+        return;
+    }
+
+    // 检查 ADB 连接
+    const deviceCheck = checkAdbConnection();
+    if (!deviceCheck.connected) {
+        await waitEnter();
+        return;
+    }
+
+    await doInstallApk(cleanPath);
+    await waitEnter();
+}
+
+// 等待用户按回车
+function waitEnter() {
+    return new Promise(resolve => {
+        process.stdout.write(`\n  ${i18n.t('apk.press_any_key')}`);
+        process.stdin.setRawMode && process.stdin.setRawMode(true);
+        process.stdin.resume();
+        process.stdin.once('data', () => {
+            process.stdin.setRawMode && process.stdin.setRawMode(false);
+            process.stdin.pause();
+            console.log('');
+            resolve();
+        });
+    });
+}
+
 // ========== 主菜单 ==========
 
 async function mainMenu() {
@@ -1083,6 +1204,7 @@ async function mainMenu() {
             choices: [
                 { name: i18n.t('menu.scan_device'), value: 'list' },
                 { name: i18n.t('menu.export_files'), value: 'import' },
+                { name: i18n.t('apk.menu_item'), value: 'install_apk' },
                 { name: i18n.t('menu.delete_files'), value: 'delete' },
                 { name: i18n.t('menu.cleanup_old'), value: 'cleanup' },
                 { name: i18n.t('menu.settings'), value: 'settings' },
@@ -1161,6 +1283,10 @@ async function mainMenu() {
                 }
                 break;
 
+            case 'install_apk':
+                await installApk();
+                break;
+
             case 'delete':
                 const toDelete = await selectFilters(files, '删除');
                 if (toDelete && toDelete.length > 0) {
@@ -1217,7 +1343,16 @@ async function mainMenu() {
 const configPath = getConfigPath();
 i18n.init(configPath);
 
-selectDeviceMenu().catch(err => {
-    console.error(chalk.red(i18n.t('error.generic')), err.message);
-    process.exit(1);
-});
+// 检测是否有 APK 文件被拖入（拖到 exe 图标上启动）
+const droppedApk = process.argv.slice(2).find(arg => arg.toLowerCase().endsWith('.apk'));
+
+if (droppedApk) {
+    installApkDirect(droppedApk).catch(err => {
+        console.error(chalk.red(i18n.t('error.generic')), err.message);
+    }).finally(() => process.exit(0));
+} else {
+    selectDeviceMenu().catch(err => {
+        console.error(chalk.red(i18n.t('error.generic')), err.message);
+        process.exit(1);
+    });
+}

@@ -197,6 +197,12 @@
     "select_filter_type": "Choose filtering method:",
     "all_files": "All {action} ({count} files, {size})",
     "filter_by_date": "By date",
+    "date_today": "Today",
+    "date_yesterday": "Yesterday",
+    "date_last3days": "Last 3 days",
+    "date_last7days": "Last 7 days",
+    "date_custom": "Pick specific dates...",
+    "date_count": "{count} files",
     "filter_by_source": "By source",
     "filter_by_both": "By date and source",
     "manual_select": "Manual selection",
@@ -250,5 +256,22 @@
     "searching": "Searching...",
     "connecting": "Connecting...",
     "disconnecting": "Disconnecting..."
+  },
+  "apk": {
+    "menu_item": "Install APK",
+    "input_prompt": "Enter APK path (you can drag a .apk file into this window):",
+    "installing": "Installing...",
+    "success": "Installation successful!",
+    "failed": "Installation failed",
+    "not_apk": "Please select a .apk file",
+    "file_not_found": "File not found, please check the path",
+    "press_any_key": "Press Enter to exit...",
+    "drag_mode_title": "── APK Install Mode ──",
+    "drag_mode_file": "APK file detected",
+    "version_downgrade": "Version downgrade rejected (newer version installed). Uninstall first to downgrade.",
+    "insufficient_storage": "Insufficient storage on device",
+    "invalid_apk": "APK file is invalid or corrupted",
+    "not_signed": "APK is not signed or has an invalid signature",
+    "unknown_error": "Unknown install error, check device logs"
   }
 }
