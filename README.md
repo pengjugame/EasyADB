@@ -10,13 +10,17 @@ A user-friendly ADB file management tool for Android devices (Meta Quest, smartp
 
 ## Features
 
-- 📱 **Device Presets** — Quick-select from Meta Quest (videos/screenshots), Android camera/download, or custom path
-- 📁 **File Browser** — Scan and display files in a formatted table with size and date info
-- 📤 **Export** — Export files to local disk, organized by date; filter by date range, app name, or manual selection
-- 📦 **Install APK** — Install APKs from the menu, or drag & drop an APK onto `EasyAdb.exe` to install instantly
-- 🗑️ **Delete** — Delete files with multiple filter options and a confirmation prompt
-- 🧹 **Cleanup** — Keep files from the last N days and remove the rest
-- ⚙️ **Settings** — Switch language (Chinese / English), customize device path and file types
+- 📱 **Device Presets** — Pick from built-in presets (Meta Quest videos/screenshots, Android camera/downloads) or enter a custom path. No need to remember device directory paths.
+
+- 📤 **Smart Export** — Filter files by date range, by app name, or hand-pick individually. Exported files are automatically sorted into date-named subfolders — no manual organizing needed.
+
+- 🗑️ **Targeted Deletion** — Same filtering options as export: delete by date, by app, or by selection. Shows total size to be freed before confirming.
+
+- 🧹 **One-step Cleanup** — Just choose how many days to keep (today / 3 / 7 / 14 / 30 days), and everything older gets cleared. Useful when Quest storage is running low.
+
+- 📦 **APK Install** — Install from the menu, or drag & drop any `.apk` file directly onto `EasyAdb.exe`. Friendly error messages for common failures (version downgrade, storage full, etc.).
+
+- ⚙️ **Zero Setup** — ADB is bundled. Just extract and run. Supports Chinese / English.
 
 ## Quick Start
 
