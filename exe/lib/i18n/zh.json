@@ -185,6 +185,12 @@
     "select_filter_type": "选择筛选方式:",
     "all_files": "全部{action} ({count}个, {size})",
     "filter_by_date": "按日期筛选",
+    "date_today": "今天",
+    "date_yesterday": "昨天",
+    "date_last3days": "最近3天",
+    "date_last7days": "最近7天",
+    "date_custom": "选择具体日期...",
+    "date_count": "{count} 个",
     "filter_by_source": "按来源筛选",
     "filter_by_both": "同时按日期和来源",
     "manual_select": "手动勾选",
@@ -238,5 +244,22 @@
     "searching": "搜索中...",
     "connecting": "连接中...",
     "disconnecting": "断开连接..."
+  },
+  "apk": {
+    "menu_item": "安装 APK",
+    "input_prompt": "请输入 APK 路径（可直接将 .apk 文件拖入此窗口）：",
+    "installing": "正在安装...",
+    "success": "安装成功！",
+    "failed": "安装失败",
+    "not_apk": "请选择 .apk 文件",
+    "file_not_found": "文件不存在，请检查路径",
+    "press_any_key": "按回车键退出...",
+    "drag_mode_title": "── APK 安装模式 ──",
+    "drag_mode_file": "检测到 APK 文件",
+    "version_downgrade": "版本降级被拒绝（新版本已安装），如需降级请先卸载",
+    "insufficient_storage": "设备存储空间不足",
+    "invalid_apk": "APK 文件无效或已损坏",
+    "not_signed": "APK 未签名或签名无效",
+    "unknown_error": "未知安装错误，请检查设备日志"
   }
 }

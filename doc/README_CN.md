@@ -1,252 +1,94 @@
 # EasyADB 使用文档
 
-## 简介
+[English](../README.md) | 中文文档
 
-EasyADB 是一个基于 Node.js 的 ADB 文件管理工具，专为 Android 设备（特别是 Meta Quest）设计，提供便捷的文件导出、删除和管理功能。
+通过交互式终端界面管理 Android 设备文件，支持 Meta Quest、手机、平板等设备。
 
-## 功能特性
+## 功能
 
-### 1. Quest 视频管理工具 (quest-video.js)
+- 📱 **设备预设** — 快速选择 Meta Quest（录屏/截图）、安卓相册/下载、或自定义路径
+- 📁 **文件浏览** — 扫描设备文件，以表格形式展示（文件名、大小、日期）
+- 📤 **导出文件** — 导出到本地，支持按日期范围、应用名称或手动勾选筛选
+- 📦 **安装 APK** — 从菜单安装，或直接拖 `.apk` 文件到 `EasyAdb.exe` 图标上安装
+- 🗑️ **删除文件** — 多种筛选方式，删除前二次确认
+- 🧹 **快速清理** — 保留最近 N 天的文件，删除旧文件
+- ⚙️ **设置** — 切换语言（中文/English）、自定义设备路径和文件类型
 
-专门为 Meta Quest 设备设计的视频管理工具。
+## 快速开始
 
-**主要功能：**
-- 📹 扫描设备上的录屏和截图
-- 📤 导出视频到本地（支持按日期分类）
-- 🗑️ 删除设备上的视频（支持多种筛选方式）
-- 🧹 清理设备（保留最近 N 天的视频）
-- 📊 显示视频详细信息（日期、大小、来源应用等）
+### 方式一：使用可执行文件（推荐）
 
-**使用方法：**
-```bash
-node src/quest-video.js
-```
+1. 下载最新 Release 并解压
+2. 将包含 `adb.exe` 的 `adb/` 文件夹放在 `EasyAdb.exe` 旁边，或确保系统 PATH 中有 ADB
+3. 双击运行 `EasyAdb.exe`
 
-### 2. ADB 文件管理器 (adb-manager.js)
+安装 APK：将 `.apk` 文件拖到 `EasyAdb.exe` 图标上即可直接安装。
 
-通用的 ADB 文件管理工具，支持任意 Android 设备和目录。
+### 方式二：从源码运行
 
-**主要功能：**
-- 📁 扫描指定目录的文件
-- 📤 导出文件到本地（支持按日期分类）
-- 🗑️ 删除设备文件（支持多种筛选方式）
-- 🧹 清理设备（保留最近 N 天的文件）
-- ⚙️ 配置管理（支持多个预设配置）
-
-**使用方法：**
-```bash
-node src/adb-manager.js
-```
-
-## 安装说明
-
-### 前置要求
-
-1. **Node.js**：需要安装 Node.js 14.0 或更高版本
-2. **ADB 工具**：需要安装 Android Debug Bridge
-   - Windows: 可以使用系统 ADB 或项目内置的 platform-tools
-   - macOS/Linux: 需要安装 Android SDK Platform Tools
-
-### 安装步骤
-
-1. 克隆或下载项目
 ```bash
 git clone https://github.com/pengjugame/EasyADB.git
-cd EasyADB
-```
-
-2. 安装依赖
-```bash
-cd src
+cd EasyADB/src
 npm install
-```
-
-3. 连接 Android 设备
-```bash
-# 通过 USB 连接设备并启用 USB 调试
-# 或通过 WiFi 连接（需要先配对）
-adb connect 设备IP:5555
-```
-
-4. 运行工具
-```bash
-# Quest 视频管理
-node quest-video.js
-
-# 通用文件管理
 node adb-manager.js
 ```
 
-## 配置说明
+需要 Node.js 14+ 和 ADB（或将 `adb.exe` 放到 `src/lib/adb/adb.exe`）。
 
-配置文件位于 `src/AdbFileManager/config/config.json`
+## 设备连接
 
-### 配置示例
+在 Android 设备上启用 USB 调试，然后通过 USB 或 WiFi 连接：
+
+```bash
+# WiFi 连接
+adb tcpip 5555
+adb connect <设备IP>:5555
+
+# 验证连接
+adb devices
+```
+
+Meta Quest：设置 → 开发者 → USB 调试。
+
+## 配置文件
+
+配置文件位置：
+- **可执行文件版**：`lib/config/config.json`（与 `EasyAdb.exe` 同目录）
+- **源码版**：`src/lib/config/config.json`
+
+首次运行时自动创建。示例：
 
 ```json
 {
-  "presets": [
-    {
+  "device": {
+    "remotePath": "/sdcard/oculus/VideoShots",
+    "fileExtensions": [".mp4"]
+  },
+  "presets": {
+    "MetaQuest3_Videos": {
       "name": "Meta Quest 录屏",
       "remotePath": "/sdcard/oculus/VideoShots",
-      "localPath": "E:/Quest3Videos",
-      "fileTypes": [".mp4", ".mov"],
-      "recursive": false
+      "fileExtensions": [".mp4"]
+    },
+    "Android_DCIM": {
+      "name": "安卓相册",
+      "remotePath": "/sdcard/DCIM/Camera",
+      "fileExtensions": [".jpg", ".png", ".mp4"]
     }
-  ],
-  "currentPreset": 0
+  }
 }
 ```
 
-### 配置项说明
-
-- `name`: 配置名称
-- `remotePath`: 设备上的目录路径
-- `localPath`: 本地保存路径
-- `fileTypes`: 文件类型过滤（如 [".mp4", ".jpg"]）
-- `recursive`: 是否递归扫描子目录
-
-## 功能详解
-
-### 导出功能
-
-支持多种导出方式：
-
-1. **全部导出**：导出所有文件到本地
-2. **按日期导出**：
-   - 今天
-   - 最近 3 天
-   - 最近 7 天
-   - 最近 14 天
-   - 最近 30 天
-   - 自定义日期范围
-3. **按应用导出**：选择特定应用的文件
-4. **组合筛选**：同时按日期和应用筛选
-5. **手动勾选**：逐个选择要导出的文件
-
-### 删除功能
-
-支持多种删除方式：
-
-1. **全部删除**：删除所有文件
-2. **按日期删除**：删除特定日期范围的文件
-3. **按应用删除**：删除特定应用的文件
-4. **组合筛选**：同时按日期和应用筛选
-5. **手动勾选**：逐个选择要删除的文件
-
-**安全机制：**
-- 所有删除操作都需要二次确认
-- 显示将要删除的文件列表和释放的空间
-- 逐个删除并验证结果
-
-### 清理功能
-
-快速清理设备，保留最近 N 天的文件：
-
-- 保留今天
-- 保留最近 3 天
-- 保留最近 7 天
-- 保留最近 14 天
-- 保留最近 30 天
-- 全部删除
-
 ## 常见问题
 
-### 1. 找不到 ADB 命令
-
-**解决方法：**
-- Windows: 确保 `platform-tools` 文件夹在项目根目录
-- macOS/Linux: 安装 Android SDK Platform Tools 并添加到 PATH
-
-### 2. 设备未连接
-
-**解决方法：**
-```bash
-# 检查设备连接
-adb devices
-
-# USB 连接：确保启用了 USB 调试
-# WiFi 连接：
-adb connect 设备IP:5555
-```
-
-### 3. 权限不足
-
-**解决方法：**
-- 确保设备上已授权 USB 调试
-- 某些系统目录可能需要 root 权限
-
-### 4. 文件导出失败
-
-**解决方法：**
-- 检查本地保存路径是否存在
-- 确保有足够的磁盘空间
-- 检查文件名是否包含非法字符
-
-## 技术栈
-
-- **Node.js**: 运行环境
-- **inquirer**: 交互式命令行界面
-- **chalk**: 终端彩色输出
-- **dayjs**: 日期处理
-- **cli-table3**: 表格显示
-- **child_process**: 执行 ADB 命令
-
-## 开发说明
-
-### 项目结构
-
-```
-EasyADB/
-├── src/                    # 源代码目录
-│   ├── quest-video.js      # Quest 视频管理工具
-│   ├── adb-manager.js      # 通用 ADB 文件管理器
-│   ├── package.json        # 项目依赖
-│   └── AdbFileManager/     # 配置文件夹
-│       └── config/
-│           └── config.json # 配置文件
-├── doc/                    # 文档目录
-├── exe/                    # 打包目录
-├── README.md               # 项目说明
-└── LICENSE                 # 开源协议
-```
-
-### 添加新功能
-
-1. 在 `src/` 目录下修改或添加新的 JS 文件
-2. 使用 `adbShell()` 函数执行 ADB 命令
-3. 使用 `inquirer` 创建交互式界面
-4. 使用 `chalk` 添加彩色输出
-
-### 代码规范
-
-- 使用 async/await 处理异步操作
-- 所有删除操作必须有二次确认
-- 显示操作进度和结果统计
-- 错误处理要友好且详细
-
-## 贡献指南
-
-欢迎提交 Issue 和 Pull Request！
-
-1. Fork 本项目
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
+| 问题 | 解决方法 |
+|------|---------|
+| 找不到 ADB | 将 `adb.exe` 放到 `lib/adb/` 目录，或安装 [Android Platform Tools](https://developer.android.com/studio/releases/platform-tools) |
+| 未检测到设备 | 运行 `adb devices` 确认；重新插拔 USB 或重连 WiFi |
+| 设备未授权 | 在设备上同意 USB 调试授权弹窗 |
+| 设备离线 | 运行 `adb kill-server` 再 `adb start-server` |
+| 权限不足 | 部分系统目录需要 root 权限 |
 
 ## 许可证
 
-本项目采用 MIT 许可证 - 详见 [LICENSE](../LICENSE) 文件
-
-## 联系方式
-
-如有问题或建议，欢迎提交 Issue。
-
-## 更新日志
-
-### v1.0.0 (2026-01-23)
-- 初始版本发布
-- 支持 Quest 视频管理
-- 支持通用 ADB 文件管理
-- 修复全部删除功能的 BUG
+MIT License — 详见 [LICENSE](../LICENSE)

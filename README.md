@@ -2,223 +2,109 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](https://nodejs.org/)
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-blue)](https://github.com/pengjugame/EasyADB)
+[![Platform](https://img.shields.io/badge/platform-Windows-blue)](https://github.com/pengjugame/EasyADB)
 
-[English](README.md) | [中文文档](doc/README_CN.md) | [快速开始](doc/QUICK_START.md)
+[English](README.md) | [中文文档](doc/README_CN.md)
 
-A powerful and user-friendly ADB file management tool built with Node.js, designed for all Android devices including Meta Quest, smartphones, and tablets. Easily export, delete, and manage files with an interactive command-line interface.
+A user-friendly ADB file management tool for Android devices (Meta Quest, smartphones, tablets). Manage files, install APKs, and keep your device organized with an interactive terminal interface.
 
 ## Features
 
-- 📱 **Universal Android Manager**: Manage files on any Android device including Meta Quest
-- 📁 **Smart File Management**: Export, delete, and organize files with advanced filtering
-- 📤 **Smart Export**: Export files with date-based organization
-- 🗑️ **Safe Deletion**: Multiple filtering options with confirmation prompts
-- 🧹 **Quick Cleanup**: Keep recent files and remove old ones
-- ⚙️ **Preset Configs**: Save and switch between multiple device configurations
-- 🎨 **Beautiful UI**: Colorful terminal interface with tables and progress indicators
+- 📱 **Device Presets** — Quick-select from Meta Quest (videos/screenshots), Android camera/download, or custom path
+- 📁 **File Browser** — Scan and display files in a formatted table with size and date info
+- 📤 **Export** — Export files to local disk, organized by date; filter by date range, app name, or manual selection
+- 📦 **Install APK** — Install APKs from the menu, or drag & drop an APK onto `EasyAdb.exe` to install instantly
+- 🗑️ **Delete** — Delete files with multiple filter options and a confirmation prompt
+- 🧹 **Cleanup** — Keep files from the last N days and remove the rest
+- ⚙️ **Settings** — Switch language (Chinese / English), customize device path and file types
 
 ## Quick Start
 
-### Prerequisites
+### Option A — Run the executable (recommended)
 
-- Node.js 14.0 or higher
-- Android Debug Bridge (ADB)
-- Android device with USB debugging enabled
+1. Download the latest release and extract it
+2. Place the `adb/` folder (containing `adb.exe`) next to `EasyAdb.exe`, or ensure `adb` is on your system PATH
+3. Double-click `EasyAdb.exe`
 
-### Installation
+To install an APK: drag any `.apk` file onto `EasyAdb.exe`.
+
+### Option B — Run from source
 
 ```bash
-# Clone the repository
 git clone https://github.com/pengjugame/EasyADB.git
-cd EasyADB
-
-# Install dependencies (choose one method)
-
-# Method 1: Use convenience scripts (Recommended)
-# Windows
-scripts\install.bat
-
-# macOS/Linux
-chmod +x scripts/*.sh
-scripts/install.sh
-
-# Method 2: Manual installation
-cd src
+cd EasyADB/src
 npm install
+node adb-manager.js
 ```
 
-### Running the Tools
+Requires Node.js 14+ and ADB on your PATH (or place `adb.exe` in `src/lib/adb/adb.exe`).
 
-**Using convenience scripts (Recommended)**:
+## Device Setup
+
+Enable USB debugging on your Android device, then connect via USB or WiFi:
 
 ```bash
-# Windows - Start EasyADB (Universal Android device manager)
-scripts\start.bat
+# WiFi connection
+adb tcpip 5555
+adb connect <device-ip>:5555
 
-# macOS/Linux
-scripts/start.sh
+# Verify
+adb devices
 ```
 
-**Manual method**:
-
-```bash
-cd src
-node adb-manager.js    # Android device manager
-```
-
-## Usage
-
-### Quest Video Manager
-
-```bash
-node src/quest-video.js
-```
-
-Features:
-- Scan videos and screenshots on Quest devices
-- Export by date, app, or custom selection
-- Delete with multiple filtering options
-- Cleanup old files while keeping recent ones
-
-### ADB File Manager
-
-```bash
-node src/adb-manager.js
-```
-
-Features:
-- Manage files in any directory on Android devices
-- Support for multiple preset configurations
-- Flexible file type filtering
-- Recursive directory scanning
+For Meta Quest: Settings → Developer → USB Debugging.
 
 ## Configuration
 
-Edit `src/AdbFileManager/config/config.json` to customize:
+Config file location:
+- **Executable**: `lib/config/config.json` (next to `EasyAdb.exe`)
+- **Source**: `src/lib/config/config.json`
+
+The config is created automatically on first run. Example:
 
 ```json
 {
-  "presets": [
-    {
-      "name": "Meta Quest Videos",
+  "device": {
+    "remotePath": "/sdcard/oculus/VideoShots",
+    "fileExtensions": [".mp4"]
+  },
+  "presets": {
+    "MetaQuest3_Videos": {
+      "name": "Meta Quest 录屏",
       "remotePath": "/sdcard/oculus/VideoShots",
-      "localPath": "E:/Quest3Videos",
-      "fileTypes": [".mp4", ".mov"],
-      "recursive": false
+      "fileExtensions": [".mp4"]
+    },
+    "Android_DCIM": {
+      "name": "安卓相册",
+      "remotePath": "/sdcard/DCIM/Camera",
+      "fileExtensions": [".jpg", ".png", ".mp4"]
     }
-  ],
-  "currentPreset": 0
+  }
 }
 ```
 
-## Project Structure
-
-```
-EasyADB/
-├── src/                    # Source code
-│   ├── adb-manager.js      # Android device manager
-│   ├── package.json        # Dependencies
-│   └── lib/                # Core libraries and config
-│       ├── adb/            # ADB tools
-│       ├── config/         # Configuration files
-│       └── i18n/           # Internationalization
-├── scripts/                # Convenience scripts
-│   ├── start.bat/sh        # Unified launcher
-│   ├── install.bat/sh      # Install dependencies
-│   ├── build.bat/sh        # Build executables
-│   └── README.md           # Scripts documentation
-├── doc/                    # Documentation
-│   └── README_CN.md        # Chinese documentation
-├── exe/                    # Compiled executables
-├── README.md               # This file
-└── LICENSE                 # MIT License
-```
-
-## Building Executables
-
-Use the convenience scripts or pkg directly:
-
-**Using scripts (Recommended)**:
-
-```bash
-# Windows
-scripts\build.bat
-
-# macOS/Linux
-scripts/build.sh
-```
-
-**Manual method**:
+## Build from Source
 
 ```bash
 # Install pkg globally
 npm install -g pkg
 
-# Build for Windows
-pkg src/adb-manager.js -t node18-win-x64 -o exe/EasyAdb.exe
-
-# Build for macOS
-pkg src/adb-manager.js -t node18-macos-x64 -o exe/EasyAdb-macos
-
-# Build for Linux
-pkg src/adb-manager.js -t node18-linux-x64 -o exe/EasyAdb-linux
+# Build Windows executable
+cd src
+npm run build
+# Output: exe/EasyAdb.exe
 ```
 
-See [exe/README.md](exe/README.md) and [scripts/README.md](scripts/README.md) for detailed instructions.
+## Troubleshooting
 
-## Documentation
-
-- 📖 [Quick Start Guide](doc/QUICK_START.md) - Get started in 5 minutes
-- 🇨🇳 [中文完整文档](doc/README_CN.md) - Complete Chinese documentation
-- 📁 [Project Structure](doc/PROJECT_STRUCTURE.md) - Detailed project structure
-- 🔨 [Build Guide](exe/README.md) - How to build executables
-- 🚀 [Scripts Guide](scripts/README.md) - Convenience scripts documentation
-- 📝 [Changelog](CHANGELOG.md) - Version history and updates
-
-## Screenshots
-
-> **Note**: Screenshots will be added in future releases. The tool features:
-> - Colorful terminal interface with tables
-> - Interactive menus with arrow key navigation
-> - Progress indicators for file operations
-> - Clear status messages and confirmations
-
-## Contributing
-
-Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+| Problem | Solution |
+|---------|----------|
+| `ADB not found` | Place `adb.exe` in `lib/adb/` next to the exe, or install [Android Platform Tools](https://developer.android.com/studio/releases/platform-tools) |
+| `No devices found` | Run `adb devices` to verify; re-plug USB or reconnect WiFi |
+| `Unauthorized` | Approve the USB debugging prompt on the device |
+| `Device offline` | Run `adb kill-server` then `adb start-server` |
+| `Permission denied` | Some system directories require root access |
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Changelog
-
-### v1.0.0 (2026-01-23)
-- Initial release
-- Quest video management support
-- Universal ADB file management
-- Fixed "delete all" functionality bug
-
-## Support
-
-If you encounter any issues or have suggestions, please [open an issue](https://github.com/pengjugame/EasyADB/issues).
-
-## Acknowledgments
-
-Built with:
-- [Node.js](https://nodejs.org/)
-- [inquirer](https://github.com/SBoudrias/Inquirer.js)
-- [chalk](https://github.com/chalk/chalk)
-- [dayjs](https://github.com/iamkun/dayjs)
-- [cli-table3](https://github.com/cli-table/cli-table3)
-
----
-
-Made with ❤️ for the Android and Quest community
+MIT License — see [LICENSE](LICENSE) for details.
