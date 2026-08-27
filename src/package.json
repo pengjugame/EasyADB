@@ -20,6 +20,8 @@
   "main": "adb-manager.js",
   "scripts": {
     "start": "node adb-manager.js",
+    "cli": "node adb-manager.js",
+    "cli:help": "node adb-manager.js help",
     "build:win": "pkg adb-manager.js -t node18-win-x64 -o ../exe/EasyAdb.exe",
     "build:macos": "pkg adb-manager.js -t node18-macos-x64 -o ../exe/EasyAdb-macos",
     "build:linux": "pkg adb-manager.js -t node18-linux-x64 -o ../exe/EasyAdb-linux",

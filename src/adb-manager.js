@@ -126,7 +126,7 @@ function getDefaultConfig() {
 // 获取默认配置文件路径
 function getDefaultConfigPath() {
     const appDir = getAppDir();
-    return path.join(appDir, 'config', 'config.default.json');
+    return path.join(appDir, 'lib', 'config', 'config.default.json');
 }
 
 // 恢复默认配置
@@ -165,33 +165,37 @@ let CONFIG = loadConfig();
 // ========== ADB 路径管理 ==========
 
 // 获取 ADB 可执行文件路径
-function getAdbPath() {
+function findLocalAdb() {
     const appDir = getAppDir();
+    const winName = process.platform === 'win32' ? 'adb.exe' : 'adb';
+    const candidates = [
+        path.join(appDir, 'lib', 'adb', winName),
+        path.join(appDir, 'adb', winName),
+        path.join(__dirname, 'lib', 'adb', winName)
+    ];
+    if (process.platform === 'darwin') {
+        candidates.unshift(path.join(__dirname, 'lib', 'adb', 'adb.darwin'));
+        candidates.unshift(path.join(appDir, 'lib', 'adb', 'adb.darwin'));
+    }
+    return candidates.find(p => fs.existsSync(p)) || null;
+}
 
-    // 优先使用本地 adb 目录
-    const localAdb = path.join(appDir, 'adb', 'adb.exe');
-    if (fs.existsSync(localAdb)) {
+function getAdbPath() {
+    const localAdb = findLocalAdb();
+    if (localAdb) {
         return `"${localAdb}"`;
     }
-
-    // 回退到系统 PATH
     return 'adb';
 }
 
-// 检查本地 ADB 是否存在
 function hasLocalAdb() {
-    const appDir = getAppDir();
-    const localAdb = path.join(appDir, 'adb', 'adb.exe');
-    return fs.existsSync(localAdb);
+    return findLocalAdb() !== null;
 }
 
-// 获取 ADB 路径信息（用于显示）
 function getAdbInfo() {
-    const appDir = getAppDir();
-    const localAdb = path.join(appDir, 'adb', 'adb.exe');
-
-    if (fs.existsSync(localAdb)) {
-        return { type: '本地', path: path.join(appDir, 'adb') };
+    const localAdb = findLocalAdb();
+    if (localAdb) {
+        return { type: '本地', path: path.dirname(localAdb) };
     }
     return { type: '系统', path: 'PATH 环境变量' };
 }
@@ -276,8 +280,13 @@ function adbExec(command, silent = false) {
     }
 }
 
+function quoteShArg(value) {
+    return `'${String(value).replace(/'/g, `'\\''`)}'`;
+}
+
 function adbShell(shellCommand, silent = false) {
-    const cmd = `${ADB_PATH} shell ${shellCommand}`;
+    // 整段 shell 用双引号交给 adb，避免 Windows 把路径引号吃掉
+    const cmd = `${ADB_PATH} shell ${JSON.stringify(shellCommand)}`;
     try {
         const result = execSync(cmd, {
             encoding: 'utf-8',
@@ -288,9 +297,12 @@ function adbShell(shellCommand, silent = false) {
         return result.trim();
     } catch (error) {
         if (!silent) {
-            console.error(chalk.red(`ADB Shell命令失败: ${error.message}`));
+            const detail = (error.stderr || error.stdout || error.message || '').toString().trim();
+            console.error(chalk.red(`ADB Shell命令失败: ${detail || error.message}`));
         }
-        return null;
+        const stdout = error.stdout ? error.stdout.toString() : '';
+        const stderr = error.stderr ? error.stderr.toString() : '';
+        return (stdout + stderr).trim() || null;
     }
 }
 
@@ -376,12 +388,15 @@ function checkAdbConnection() {
 
 // ========== 文件列表 ==========
 
-function getFileList() {
+function getFileList(options = {}) {
+    const silent = options.silent === true;
     const remotePath = CONFIG.device.remotePath;
     const extensions = CONFIG.device.fileExtensions;
 
-    console.log(chalk.cyan(`\n${i18n.t('device.scanning')} ${CONFIG.device.name}...`));
-    console.log(chalk.gray(`${i18n.t('file.path')}: ${remotePath}`));
+    if (!silent) {
+        console.log(chalk.cyan(`\n${i18n.t('device.scanning')} ${CONFIG.device.name}...`));
+        console.log(chalk.gray(`${i18n.t('file.path')}: ${remotePath}`));
+    }
 
     const lsResult = adbShell(`ls -laR ${remotePath}`, true);
 
@@ -405,20 +420,26 @@ function getFileList() {
             continue;
         }
 
-        // 解析文件行
-        const match = trimmedLine.match(/^[\-rwxd]+\s+\d+\s+\S+\s+\S+\s+(\d+)\s+(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})\s+(.+)$/);
+        // 只收录普通文件/符号链接，跳过目录（rm -f 删不掉目录，会表现为“清不掉”）
+        if (trimmedLine.startsWith('d') || trimmedLine.startsWith('total')) {
+            continue;
+        }
+
+        const match = trimmedLine.match(/^[-l][\-rwxsStT]+\s+\d+\s+\S+\s+\S+\s+(\d+)\s+(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})\s+(.+)$/);
 
         if (match) {
             const fileName = match[4];
+            if (fileName === '.' || fileName === '..') {
+                continue;
+            }
 
-            // 检查文件扩展名
             const matchesExtension = extensions.includes('*') ||
                 extensions.some(ext => fileName.toLowerCase().endsWith(ext.toLowerCase()));
 
             if (matchesExtension) {
                 const size = parseInt(match[1]);
                 const dateStr = `${match[2]} ${match[3]}`;
-                const fullPath = `${currentDir}/${fileName}`;
+                const fullPath = `${currentDir.replace(/\/+$/, '')}/${fileName}`;
                 // 使用 dayjs 解析日期，然后转换为 Date 对象，确保解析正确
                 const date = dayjs(dateStr, 'YYYY-MM-DD HH:mm').toDate();
 
@@ -428,7 +449,9 @@ function getFileList() {
     }
 
     files.sort((a, b) => b.date - a.date);
-    console.log(chalk.green(i18n.t('device.files_found', { count: files.length })));
+    if (!silent) {
+        console.log(chalk.green(i18n.t('device.files_found', { count: files.length })));
+    }
 
     return files;
 }
@@ -514,98 +537,164 @@ function filterFiles(files, filters) {
 
 // ========== 导入 ==========
 
-async function importFiles(files) {
+async function importFiles(files, options = {}) {
     if (files.length === 0) {
-        console.log(chalk.yellow(i18n.t('file.no_files_to_import')));
-        return;
+        if (!options.silent) {
+            console.log(chalk.yellow(i18n.t('file.no_files_to_import')));
+        }
+        return { success: 0, failed: 0, localDir: null, pulled: [] };
     }
 
-    // 创建本地目录
-    let localDir;
-    if (CONFIG.import.useSubfolderByDate) {
-        const folderName = dayjs().format(CONFIG.import.folderNameFormat);
-        localDir = path.join(process.cwd(), CONFIG.import.localFolder, folderName);
-    } else {
-        localDir = path.join(process.cwd(), CONFIG.import.localFolder);
+    let localDir = options.outDir;
+    if (!localDir) {
+        if (CONFIG.import.useSubfolderByDate) {
+            const folderName = dayjs().format(CONFIG.import.folderNameFormat);
+            localDir = path.join(process.cwd(), CONFIG.import.localFolder, folderName);
+        } else {
+            localDir = path.join(process.cwd(), CONFIG.import.localFolder);
+        }
     }
 
     if (!fs.existsSync(localDir)) {
         fs.mkdirSync(localDir, { recursive: true });
     }
 
-    console.log(chalk.cyan(`\n${i18n.t('file.starting_import', { count: files.length, dir: localDir })}`));
+    if (!options.silent) {
+        console.log(chalk.cyan(`\n${i18n.t('file.starting_import', { count: files.length, dir: localDir })}`));
+    }
 
     let success = 0;
     let failed = 0;
+    const pulled = [];
 
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        process.stdout.write(chalk.cyan(`[${i + 1}/${files.length}] ${file.fileName}... `));
+        if (!options.silent) {
+            process.stdout.write(chalk.cyan(`[${i + 1}/${files.length}] ${file.fileName}... `));
+        }
 
         const localPath = path.join(localDir, file.fileName);
 
         try {
-            execSync(`adb pull "${file.fullPath}" "${localPath}"`, {
+            execSync(`${ADB_PATH} pull "${file.fullPath}" "${localPath}"`, {
                 encoding: 'utf-8',
                 maxBuffer: 50 * 1024 * 1024,
                 windowsHide: true
             });
 
             if (fs.existsSync(localPath) && fs.statSync(localPath).size > 0) {
-                console.log(chalk.green('[OK]'));
+                if (!options.silent) console.log(chalk.green('[OK]'));
                 success++;
+                pulled.push({ ...fileToPojo(file), localPath });
             } else {
-                console.log(chalk.red('[FAIL]'));
+                if (!options.silent) console.log(chalk.red('[FAIL]'));
                 failed++;
             }
         } catch (error) {
             const errMsg = error.stderr ? error.stderr.toString().trim() : error.message;
-            console.log(chalk.red(`[FAIL] (${errMsg.substring(0, 40)})`));
+            if (!options.silent) console.log(chalk.red(`[FAIL] (${errMsg.substring(0, 40)})`));
             failed++;
         }
     }
 
-    console.log(chalk.green(`\n${i18n.t('file.import_complete', { success, failed })}`));
-    console.log(chalk.cyan(`${i18n.t('file.save_location')}: ${localDir}`));
+    if (!options.silent) {
+        console.log(chalk.green(`\n${i18n.t('file.import_complete', { success, failed })}`));
+        console.log(chalk.cyan(`${i18n.t('file.save_location')}: ${localDir}`));
+    }
+    return { success, failed, localDir, pulled };
+}
+
+function fileToPojo(file) {
+    return {
+        fileName: file.fileName,
+        fullPath: file.fullPath,
+        sourceName: file.sourceName,
+        size: file.size,
+        sizeFormatted: file.sizeFormatted,
+        date: dayjs(file.date).format('YYYY-MM-DD HH:mm'),
+        dateDay: dayjs(file.date).format('YYYY-MM-DD')
+    };
+}
+
+function applyPresetByName(name) {
+    if (!name) return CONFIG.lastUsedDevice || 'MetaQuest3_Videos';
+    const aliases = {
+        videos: 'MetaQuest3_Videos',
+        video: 'MetaQuest3_Videos',
+        screenshots: 'MetaQuest3_Screenshots',
+        screenshot: 'MetaQuest3_Screenshots',
+        dcim: 'Android_DCIM',
+        download: 'Android_Download',
+        downloads: 'Android_Download'
+    };
+    const key = aliases[String(name).toLowerCase()] || name;
+    const preset = CONFIG.presets[key];
+    if (!preset) {
+        const known = Object.keys(CONFIG.presets).join(', ');
+        throw new Error(`未知预设: ${name}。可选: videos, screenshots, dcim, download, 或 ${known}`);
+    }
+    CONFIG.device.name = preset.name;
+    CONFIG.device.remotePath = preset.remotePath;
+    CONFIG.device.fileExtensions = preset.fileExtensions;
+    return key;
 }
 
 // ========== 删除 ==========
 
-async function deleteFiles(files) {
+function spliceDeleted(files, deleted) {
+    for (const f of deleted) {
+        const index = files.indexOf(f);
+        if (index > -1) files.splice(index, 1);
+    }
+}
+
+async function deleteFiles(files, options = {}) {
+    const silent = options.silent === true;
     if (files.length === 0) {
-        console.log(chalk.yellow(i18n.t('file.no_files_to_delete')));
-        return;
+        if (!silent) {
+            console.log(chalk.yellow(i18n.t('file.no_files_to_delete')));
+        }
+        return [];
     }
 
-    console.log(chalk.red(`\n${i18n.t('file.starting_delete', { count: files.length })}`));
+    if (!silent) {
+        console.log(chalk.red(`\n${i18n.t('file.starting_delete', { count: files.length })}`));
+    }
 
     let success = 0;
     let failed = 0;
+    const deleted = [];
 
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        process.stdout.write(chalk.yellow(`[${i + 1}/${files.length}] ${file.fileName}... `));
+        if (!silent) {
+            process.stdout.write(chalk.yellow(`[${i + 1}/${files.length}] ${file.fileName}... `));
+        }
 
         try {
-            // Execute delete command - ignore return value, rm outputs nothing on success
-            adbShell(`rm -f "${file.fullPath}"`, true);
+            const quoted = quoteShArg(file.fullPath);
+            const rmOut = adbShell(`rm -f -- ${quoted} 2>&1`, true) || '';
+            const marker = adbShell(`if [ -e ${quoted} ]; then echo __STILL_EXISTS__; else echo __GONE__; fi`, true) || '';
 
-            // Verify deletion by checking if file still exists
-            const checkResult = adbShell(`ls "${file.fullPath}" 2>/dev/null`, true);
-            if (!checkResult || checkResult.trim() === '' || checkResult.includes('No such file')) {
-                console.log(chalk.green('[OK]'));
+            if (marker.includes('__GONE__')) {
+                if (!silent) console.log(chalk.green('[OK]'));
                 success++;
+                deleted.push(file);
             } else {
-                console.log(chalk.red('[FAIL] (still exists)'));
+                const hint = (rmOut || marker).replace(/\s+/g, ' ').substring(0, 80);
+                if (!silent) console.log(chalk.red(`[FAIL] ${hint || 'still exists'}`));
                 failed++;
             }
         } catch (error) {
-            console.log(chalk.red(`[FAIL] (${error.message})`));
+            if (!silent) console.log(chalk.red(`[FAIL] (${error.message})`));
             failed++;
         }
     }
 
-    console.log(chalk.green(`\n${i18n.t('file.delete_complete', { success, failed })}`));
+    if (!silent) {
+        console.log(chalk.green(`\n${i18n.t('file.delete_complete', { success, failed })}`));
+    }
+    return deleted;
 }
 
 // ========== 筛选菜单 ==========
@@ -790,7 +879,7 @@ async function cleanupDevice(files) {
         ]
     }]);
 
-    if (keepDays === 'back') return;
+    if (keepDays === 'back') return [];
 
     let toDelete;
     if (keepDays === -1) {
@@ -811,7 +900,7 @@ async function cleanupDevice(files) {
 
     if (toDelete.length === 0) {
         console.log(chalk.yellow(`\n${i18n.t('file.no_files_match')}`));
-        return;
+        return [];
     }
 
     displayFileTable(toDelete, '将要删除的文件');
@@ -828,10 +917,10 @@ async function cleanupDevice(files) {
     }]);
 
     if (confirm) {
-        await deleteFiles(toDelete);
-    } else {
-        console.log(chalk.yellow(i18n.t('confirm.cancel')));
+        return await deleteFiles(toDelete);
     }
+    console.log(chalk.yellow(i18n.t('confirm.cancel')));
+    return [];
 }
 
 // ========== 设置菜单 ==========
@@ -1119,9 +1208,7 @@ async function installApkDirect(apkPath) {
         return;
     }
 
-    // 检查 ADB 连接
-    const deviceCheck = checkAdbConnection();
-    if (!deviceCheck.connected) {
+    if (!checkAdbConnection()) {
         await waitEnter();
         return;
     }
@@ -1238,7 +1325,7 @@ async function mainMenu() {
                         const { confirm } = await inquirer.prompt([{
                             type: 'confirm',
                             name: 'confirm',
-                            message: i18n.t('file.delete_confirm', { count: toImport.length }),
+                            message: i18n.t('confirm.import_files', { count: toImport.length }),
                             default: true
                         }]);
                         if (confirm) {
@@ -1255,7 +1342,8 @@ async function mainMenu() {
                             default: false
                         }]);
                         if (confirm) {
-                            await deleteFiles(toDelete);
+                            const deleted = await deleteFiles(toDelete);
+                            spliceDeleted(files, deleted);
                         }
                     }
                 } else if (afterListAction === 'refresh') {
@@ -1302,17 +1390,15 @@ async function mainMenu() {
                     }]);
 
                     if (confirm) {
-                        await deleteFiles(toDelete);
-                        toDelete.forEach(f => {
-                            const index = files.indexOf(f);
-                            if (index > -1) files.splice(index, 1);
-                        });
+                        const deleted = await deleteFiles(toDelete);
+                        spliceDeleted(files, deleted);
                     }
                 }
                 break;
 
             case 'cleanup':
-                await cleanupDevice(files);
+                const cleaned = await cleanupDevice(files);
+                spliceDeleted(files, cleaned || []);
                 break;
 
             case 'settings':
@@ -1339,14 +1425,34 @@ async function mainMenu() {
 
 // ========== 启动 ==========
 
-// 初始化国际化
 const configPath = getConfigPath();
 i18n.init(configPath);
 
-// 检测是否有 APK 文件被拖入（拖到 exe 图标上启动）
-const droppedApk = process.argv.slice(2).find(arg => arg.toLowerCase().endsWith('.apk'));
+const argv = process.argv.slice(2);
+const CLI_COMMANDS = new Set(['help', '-h', '--help', 'devices', 'list', 'stats', 'query', 'export', 'delete']);
+const droppedApk = argv.find(arg => arg.toLowerCase().endsWith('.apk'));
+const isCli = argv.length > 0 && CLI_COMMANDS.has(argv[0]);
 
-if (droppedApk) {
+if (isCli) {
+    const { runCli } = require('./lib/cli-entry');
+    runCli(argv, {
+        CONFIG,
+        ADB_PATH,
+        adbExec,
+        getFileList,
+        filterFiles,
+        importFiles,
+        deleteFiles,
+        fileToPojo,
+        applyPresetByName,
+        checkAdbConnection
+    }).then(() => {
+        process.exit(process.exitCode || 0);
+    }).catch(err => {
+        console.error(JSON.stringify({ ok: false, error: err.message }));
+        process.exit(1);
+    });
+} else if (droppedApk) {
     installApkDirect(droppedApk).catch(err => {
         console.error(chalk.red(i18n.t('error.generic')), err.message);
     }).finally(() => process.exit(0));
