@@ -74,7 +74,7 @@ flowchart LR
    CLI 删除必须 `--yes`，且必须带过滤（`--name` / `--query` / `--date` 等）。禁止无条件全删。范围删除应先能 dry-run 看名单（后续补）。
 
 4. **默认导出目录是产品契约，不是 cwd 副作用**  
-   Agent 工作目录会变。导出必须落到配置里的本机仓库（当前实践是 `exe/Videos`），Skill 与 CLI 默认值必须一致。
+   Agent 工作目录会变。CLI 省略 `--out` 时落到 `~/Downloads/EasyADB/当天日期`；用户指定目录就用 `--out`，C / D / E 都可以。菜单仍用当前工作目录下的 `Videos`。
 
 5. **包装诚实**  
    文档写「内置 ADB、解压即用」，发布物就必须带上 adb。做不到就改文档，不要用「兼容层」假装成功。
@@ -121,21 +121,30 @@ node "E:\Space\EasyADB\src\adb-manager.js" <command> [options]
 | 意图 | 命令 |
 |------|------|
 | 设备 | `devices` |
+| 预设 | `presets` |
 | 统计 | `stats` / `query` |
-| 列表 | `list` |
+| 列表 / 查找 | `list` / `find` |
 | 导出 | `export` |
-| 删除 | `delete`（`--yes` + 过滤） |
+| 删除 | `delete`（无 `--yes` 只预览） |
+| 清理 | `cleanup --keep N` |
+| 安装 | `install <apk>` |
 
-常用选项：`--preset` `--date` `--days` `--source` `--query` `--last` `--name` `--out` `--yes`。
+常用选项：`--preset` `--date`（可重复）`--days` `--from` `--to` `--query`（可重复）`--regex` `--name` `--source` `--ext` `--min-size` `--max-size` `--last` `--oldest` `--serial` `--out` `--yes`。
 
-stdout 为 JSON。Skill 路径：`C:\Users\pengj\.claude\skills\easyadb\SKILL.md`（全局用户级，与其它 Claude skill 同树）。
+查找命令是 `find`（与 `list` 相同）。`presets` 不访问设备。`cleanup --keep N` 对齐菜单保留天数。`delete` / `cleanup` 不带 `--yes` 只预览（`dryRun: true`）。`export --then-delete` 必须同时 `--yes`，且只删本地大小已核对的文件。`stats` 带 `storage` 和 `local`。多设备必须 `--serial`。
+
+stdout 为 JSON。失败也写在 stdout。Skill 路径：`C:\Users\pengj\.claude\skills\easyadb\SKILL.md`（全局用户级，与其它 Claude skill 同树）。
+
+导出：省略 `--out` 时 CLI 落到 `~/Downloads/EasyADB/当天日期`。`--out` 可以是 C、D、E 上的任意目录。菜单导出仍按配置落在当前工作目录的 `Videos` 下，两条入口的默认目录不同。
 
 自然语言映射示例：
 
-- 「今天最后一个视频」→ `export --preset videos --date today --last 1 --out <本机仓库>`
-- 「最近 10 天有哪些」→ `list --preset videos --days 10`
+- 「今天最后一个视频」→ `export --preset videos --date today --last 1`
+- 「最近 10 天有哪些」→ `find --preset videos --days 10`
 - 「一共多少、跨多少天」→ `stats --preset videos`
-- 「删掉某某.mp4」→ `delete --preset videos --name "某某.mp4" --yes`
+- 「删掉某某.mp4」→ 先 `delete --preset videos --name "某某.mp4"` 看预览，再加 `--yes`
+
+2026-10-13：以上 CLI 已在 `node src/adb-manager.js` 生效。`exe/EasyAdb.exe` 仍是 2026-04-08 的包，没有这套无交互命令。
 
 ---
 
